@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HRPB CRM - Real Estate Client Management System</title>
+<meta name="description" content="HRPB CRM - Professional real estate CRM for managing clients, installment plans, follow-ups, and team collaboration. Highrise projects and townhouse sales management.">
+<meta name="keywords" content="HRPB CRM, real estate CRM, client management, installment plans, property sales, Pakistan real estate">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="HRPB CRM - Real Estate Client Management">
+<meta property="og:description" content="Professional CRM for real estate teams. Manage clients, follow-ups, and installment plans.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://hrpbcrm.com">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary: #2563eb; --primary-dark: #1d4ed8; --bg: #f1f5f9;
+  --card: #ffffff; --text: #1e293b; --text-light: #64748b;
+  --border: #e2e8f0; --danger: #ef4444; --success: #22c55e;
+  --warning: #f59e0b;
+}
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* Login */
+.login-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+.login-box { background: var(--card); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 360px; }
+.login-box h1 { text-align: center; margin-bottom: 1.5rem; color: var(--primary); }
+.login-box input { width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; font-size: 1rem; }
+.login-box button { width: 100%; padding: 0.75rem; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; }
+.login-box button:hover { background: var(--primary-dark); }
+
+/* Layout */
+.app { display: none; }
+.sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: var(--text); color: white; padding: 1.5rem 0; overflow-y: auto; }
+.sidebar h2 { padding: 0 1.5rem; margin-bottom: 2rem; font-size: 1.3rem; }
+.sidebar h2 span { color: var(--primary); }
+.sidebar a { display: block; padding: 0.75rem 1.5rem; color: #94a3b8; text-decoration: none; transition: all 0.2s; cursor: pointer; }
+.sidebar a:hover, .sidebar a.active { background: rgba(255,255,255,0.1); color: white; }
+.sidebar .user-info { position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); }
+.sidebar .user-info .name { font-weight: 600; }
+.sidebar .user-info .role { font-size: 0.8rem; color: #94a3b8; }
+.sidebar .logout-btn { color: var(--danger); cursor: pointer; font-size: 0.85rem; margin-top: 0.5rem; display: inline-block; }
+
+.main { margin-left: 240px; padding: 2rem; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* Cards & Stats */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+.stat-card { background: var(--card); padding: 1.25rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.stat-card .label { font-size: 0.85rem; color: var(--text-light); }
+.stat-card .value { font-size: 1.8rem; font-weight: 700; margin-top: 0.25rem; }
+
+/* Table */
+.table-container { background: var(--card); border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+th { background: #f8fafc; font-weight: 600; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; }
+tr:hover { background: #f8fafc; }
+
+/* Badges */
+.badge { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; display: inline-block; }
+.badge-hot { background: #fef2f2; color: #dc2626; }
+.badge-warm { background: #fff7ed; color: #ea580c; }
+.badge-cold { background: #eff6ff; color: #2563eb; }
+.badge-not_interested { background: #f1f5f9; color: #64748b; }
+.badge-close_won { background: #f0fdf4; color: #16a34a; }
+.badge-close_lost { background: #fef2f2; color: #991b1b; }
+
+/* Buttons */
+.btn { padding: 0.5rem 1rem; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: all 0.2s; }
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-danger { background: var(--danger); color: white; }
+.btn-sm { padding: 0.35rem 0.75rem; font-size: 0.8rem; }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+.btn-outline:hover { background: var(--bg); }
+
+/* Toolbar */
+.toolbar { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
+.toolbar input, .toolbar select { padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; }
+.toolbar input[type="text"] { min-width: 200px; }
+
+/* Modal */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
+.modal-overlay.show { display: flex; }
+.modal { background: var(--card); border-radius: 12px; padding: 2rem; width: 500px; max-width: 90vw; max-height: 85vh; overflow-y: auto; }
+.modal h2 { margin-bottom: 1.5rem; }
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; margin-bottom: 0.35rem; font-weight: 500; font-size: 0.9rem; }
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; }
+.form-group textarea { min-height: 80px; resize: vertical; }
+.form-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; }
+
+/* Notes */
+.notes-list { max-height: 400px; overflow-y: auto; }
+.note-item { padding: 0.75rem; border-bottom: 1px solid var(--border); }
+.note-item .note-meta { font-size: 0.8rem; color: var(--text-light); margin-bottom: 0.35rem; }
+.note-item .note-text { white-space: pre-wrap; }
+
+/* Overdue */
+.overdue { color: var(--danger); font-weight: 600; }
+.today { color: var(--warning); font-weight: 600; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar { width: 100%; position: relative; padding: 1rem 0; }
+  .sidebar .user-info { position: relative; }
+  .main { margin-left: 0; }
+}
+
+.page-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; }
+</style>
+</head>
+<body>
+
+<!-- Login -->
+<div class="login-container" id="loginPage">
+  <div class="login-box">
+    <h1>🔮 HRPB CRM</h1>
+    <input type="text" id="loginUser" placeholder="Username" autofocus>
+    <input type="password" id="loginPass" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <p id="loginError" style="color:red;text-align:center;margin-top:0.75rem;display:none;"></p>
+  </div>
+</div>
+
+<!-- App -->
+<div class="app" id="app">
+  <nav class="sidebar">
+    <h2>🔮 <span>HRPB</span> CRM</h2>
+    <a onclick="showPage('dashboard')" id="nav-dashboard">📊 Dashboard</a>
+    <a onclick="showPage('clients')" id="nav-clients">👥 Clients</a>
+    <a id="nav-team" onclick="showPage('team')" style="display:none">👔 Team</a>
+    <div class="user-info">
+      <div class="name" id="userName"></div>
+      <div class="role" id="userRole"></div>
+      <span class="logout-btn" onclick="logout()">Logout</span>
+    </div>
+  </nav>
+
+  <div class="main">
+    <!-- Dashboard -->
+    <div class="page" id="page-dashboard">
+      <h1 class="page-title">Dashboard</h1>
+      <div class="stats-grid" id="statsGrid"></div>
+      <h3 style="margin-bottom:1rem;">Today's Follow-ups</h3>
+      <div class="table-container" id="todayTable"></div>
+    </div>
+
+    <!-- Clients -->
+    <div class="page" id="page-clients">
+      <h1 class="page-title">Clients</h1>
+      <div class="toolbar">
+        <input type="text" id="searchInput" placeholder="Search name or contact..." oninput="loadClients()">
+        <select id="filterLevel" onchange="loadClients()">
+          <option value="">All Levels</option>
+          <option value="hot">🔥 Hot</option>
+          <option value="warm">🌤 Warm</option>
+          <option value="cold">❄️ Cold</option>
+          <option value="not_interested">🚫 Not Interested</option>
+          <option value="close_won">✅ Close Won</option>
+          <option value="close_lost">❌ Close Lost</option>
+        </select>
+        <select id="filterUser" onchange="loadClients()" style="display:none"></select>
+        <div style="flex:1"></div>
+        <button class="btn btn-outline" onclick="showUploadModal()">📤 Upload Excel</button>
+        <button class="btn btn-primary" onclick="showClientModal()">+ Add Client</button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th><th>Contact</th><th>Level</th><th>Follow-up</th><th id="thAssigned" style="display:none">Assigned To</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="clientsBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Team (admin only) -->
+    <div class="page" id="page-team">
+      <h1 class="page-title">Team Management</h1>
+      <div class="toolbar">
+        <div style="flex:1"></div>
+        <button class="btn btn-primary" onclick="showUserModal()">+ Add Member</button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Actions</th></tr></thead>
+          <tbody id="teamBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Client Modal -->
+<div class="modal-overlay" id="clientModal">
+  <div class="modal">
+    <h2 id="clientModalTitle">Add Client</h2>
+    <input type="hidden" id="clientId">
+    <div class="form-group"><label>Name *</label><input type="text" id="cName"></div>
+    <div class="form-group"><label>Contact</label><input type="text" id="cContact"></div>
+    <div class="form-group"><label>Email</label><input type="email" id="cEmail"></div>
+    <div class="form-group">
+      <label>Interest Level</label>
+      <select id="cLevel">
+        <option value="cold">❄️ Cold</option>
+        <option value="warm">🌤 Warm</option>
+        <option value="hot">🔥 Hot</option>
+        <option value="not_interested">🚫 Not Interested</option>
+        <option value="close_won">✅ Close Won</option>
+        <option value="close_lost">❌ Close Lost</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Follow-up Date</label><input type="date" id="cFollowup"></div>
+    <div class="form-group" id="cAssignGroup" style="display:none">
+      <label>Assign To</label><select id="cAssign"></select>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-outline" onclick="closeModal('clientModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveClient()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Notes Modal -->
+<div class="modal-overlay" id="notesModal">
+  <div class="modal">
+    <h2>Notes - <span id="notesClientName"></span></h2>
+    <div class="form-group">
+      <textarea id="newNote" placeholder="Add a note about client conversation..."></textarea>
+      <button class="btn btn-primary btn-sm" style="margin-top:0.5rem" onclick="addNote()">Add Note</button>
+    </div>
+    <hr style="margin:1rem 0">
+    <div class="notes-list" id="notesList"></div>
+    <div class="form-actions">
+      <button class="btn btn-outline" onclick="closeModal('notesModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Upload Modal -->
+<div class="modal-overlay" id="uploadModal">
+  <div class="modal">
+    <h2>Upload Excel</h2>
+    <p style="margin-bottom:1rem;color:var(--text-light);font-size:0.9rem;">Excel columns: Name, Contact, Email, Interest (hot/warm/cold), Followup date</p>
+    <div class="form-group"><label>Excel File (.xlsx, .xls)</label><input type="file" id="excelFile" accept=".xlsx,.xls,.csv"></div>
+    <div class="form-group" id="uploadAssignGroup" style="display:none">
+      <label>Assign All To</label><select id="uploadAssign"></select>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-outline" onclick="closeModal('uploadModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="uploadExcel()">Upload</button>
+    </div>
+  </div>
+</div>
+
+<!-- User Modal -->
+<div class="modal-overlay" id="userModal">
+  <div class="modal">
+    <h2>Add Team Member</h2>
+    <div class="form-group"><label>Name *</label><input type="text" id="uName"></div>
+    <div class="form-group"><label>Username *</label><input type="text" id="uUsername"></div>
+    <div class="form-group"><label>Password *</label><input type="password" id="uPassword"></div>
+    <div class="form-group">
+      <label>Role</label>
+      <select id="uRole"><option value="member">Member</option><option value="admin">Admin</option></select>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-outline" onclick="closeModal('userModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveUser()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentUser = null;
+let allUsers = [];
+let currentNotesClientId = null;
+
+async function api(url, opts = {}) {
+  const res = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...opts });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Error');
+  return data;
+}
+
+async function login() {
+  try {
+    const user = await api('/api/login', { method: 'POST', body: JSON.stringify({ username: document.getElementById('loginUser').value, password: document.getElementById('loginPass').value }) });
+    currentUser = user;
+    initApp();
+  } catch (e) {
+    const el = document.getElementById('loginError');
+    el.textContent = e.message;
+    el.style.display = 'block';
+  }
+}
+
+document.getElementById('loginPass').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
+
+async function checkAuth() {
+  try {
+    currentUser = await api('/api/me');
+    initApp();
+  } catch (e) {
+    document.getElementById('loginPage').style.display = 'flex';
+  }
+}
+
+function initApp() {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('userName').textContent = currentUser.name;
+  document.getElementById('userRole').textContent = currentUser.role === 'admin' ? '👑 Admin' : '👤 Member';
+  
+  if (currentUser.role === 'admin') {
+    document.getElementById('nav-team').style.display = 'block';
+    document.getElementById('thAssigned').style.display = '';
+    document.getElementById('cAssignGroup').style.display = 'block';
+    document.getElementById('uploadAssignGroup').style.display = 'block';
+    document.getElementById('filterUser').style.display = '';
+    loadUsers();
+  }
+  showPage('dashboard');
+}
+
+async function loadUsers() {
+  allUsers = await api('/api/users');
+  const selects = ['cAssign', 'filterUser', 'uploadAssign'];
+  selects.forEach(id => {
+    const el = document.getElementById(id);
+    el.innerHTML = id === 'filterUser' ? '<option value="">All Members</option>' : '';
+    allUsers.forEach(u => {
+      el.innerHTML += `<option value="${u.id}">${u.name}</option>`;
+    });
+  });
+}
+
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.getElementById('nav-' + page)?.classList.add('active');
+  if (page === 'dashboard') loadDashboard();
+  if (page === 'clients') loadClients();
+  if (page === 'team') loadTeam();
+}
+
+async function loadDashboard() {
+  const stats = await api('/api/stats');
+  const grid = document.getElementById('statsGrid');
+  let html = `<div class="stat-card"><div class="label">Total Clients</div><div class="value">${stats.total}</div></div>`;
+  html += `<div class="stat-card"><div class="label">Today's Follow-ups</div><div class="value" style="color:var(--warning)">${stats.todayFollowups}</div></div>`;
+  html += `<div class="stat-card"><div class="label">Overdue</div><div class="value" style="color:var(--danger)">${stats.overdueFollowups}</div></div>`;
+  stats.byLevel.forEach(l => {
+    html += `<div class="stat-card"><div class="label">${levelLabel(l.interest_level)}</div><div class="value">${l.c}</div></div>`;
+  });
+  grid.innerHTML = html;
+
+  // Today's followups
+  const params = new URLSearchParams();
+  const clients = await api('/api/clients?' + params);
+  const today = new Date().toISOString().split('T')[0];
+  const todayClients = clients.filter(c => c.followup_date === today);
+  const table = document.getElementById('todayTable');
+  if (todayClients.length === 0) {
+    table.innerHTML = '<p style="padding:1.5rem;color:var(--text-light)">No follow-ups scheduled for today 👍</p>';
+  } else {
+    let t = '<table><thead><tr><th>Name</th><th>Contact</th><th>Level</th><th>Actions</th></tr></thead><tbody>';
+    todayClients.forEach(c => {
+      t += `<tr><td>${esc(c.name)}</td><td>${esc(c.contact||'')}</td><td><span class="badge badge-${c.interest_level}">${levelLabel(c.interest_level)}</span></td><td><button class="btn btn-sm btn-outline" onclick="openNotes(${c.id},'${esc(c.name)}')">📝 Notes</button></td></tr>`;
+    });
+    t += '</tbody></table>';
+    table.innerHTML = t;
+  }
+}
+
+async function loadClients() {
+  const params = new URLSearchParams();
+  const search = document.getElementById('searchInput').value;
+  const level = document.getElementById('filterLevel').value;
+  const user = document.getElementById('filterUser').value;
+  if (search) params.set('search', search);
+  if (level) params.set('interest_level', level);
+  if (user) params.set('assigned_to', user);
+  
+  const clients = await api('/api/clients?' + params);
+  const tbody = document.getElementById('clientsBody');
+  const today = new Date().toISOString().split('T')[0];
+  
+  tbody.innerHTML = clients.map(c => {
+    let dateClass = '';
+    if (c.followup_date) {
+      if (c.followup_date < today && !['close_won','close_lost','not_interested'].includes(c.interest_level)) dateClass = 'overdue';
+      else if (c.followup_date === today) dateClass = 'today';
+    }
+    return `<tr>
+      <td><strong>${esc(c.name)}</strong></td>
+      <td>${esc(c.contact||'')}</td>
+      <td><span class="badge badge-${c.interest_level}">${levelLabel(c.interest_level)}</span></td>
+      <td class="${dateClass}">${c.followup_date || '-'}</td>
+      ${currentUser.role === 'admin' ? `<td>${esc(c.assigned_name||'')}</td>` : ''}
+      <td>
+        <button class="btn btn-sm btn-outline" onclick="openNotes(${c.id},'${esc(c.name)}')">📝</button>
+        <button class="btn btn-sm btn-outline" onclick="editClient(${c.id})">✏️</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteClient(${c.id})">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function levelLabel(l) {
+  const map = { hot: '🔥 Hot', warm: '🌤 Warm', cold: '❄️ Cold', not_interested: '🚫 Not Interested', close_won: '✅ Close Won', close_lost: '❌ Close Lost' };
+  return map[l] || l;
+}
+
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+function showClientModal(data) {
+  document.getElementById('clientModalTitle').textContent = data ? 'Edit Client' : 'Add Client';
+  document.getElementById('clientId').value = data?.id || '';
+  document.getElementById('cName').value = data?.name || '';
+  document.getElementById('cContact').value = data?.contact || '';
+  document.getElementById('cEmail').value = data?.email || '';
+  document.getElementById('cLevel').value = data?.interest_level || 'cold';
+  document.getElementById('cFollowup').value = data?.followup_date || '';
+  if (data?.assigned_to) document.getElementById('cAssign').value = data.assigned_to;
+  document.getElementById('clientModal').classList.add('show');
+}
+
+async function editClient(id) {
+  const clients = await api('/api/clients');
+  const c = clients.find(x => x.id === id);
+  if (c) showClientModal(c);
+}
+
+async function saveClient() {
+  const id = document.getElementById('clientId').value;
+  const body = {
+    name: document.getElementById('cName').value,
+    contact: document.getElementById('cContact').value,
+    email: document.getElementById('cEmail').value,
+    interest_level: document.getElementById('cLevel').value,
+    followup_date: document.getElementById('cFollowup').value,
+    assigned_to: document.getElementById('cAssign').value || undefined
+  };
+  if (!body.name) return alert('Name is required');
+  await api(id ? `/api/clients/${id}` : '/api/clients', { method: id ? 'PUT' : 'POST', body: JSON.stringify(body) });
+  closeModal('clientModal');
+  loadClients();
+}
+
+async function deleteClient(id) {
+  if (!confirm('Are you sure?')) return;
+  await api(`/api/clients/${id}`, { method: 'DELETE' });
+  loadClients();
+}
+
+async function openNotes(clientId, name) {
+  currentNotesClientId = clientId;
+  document.getElementById('notesClientName').textContent = name;
+  document.getElementById('newNote').value = '';
+  await loadNotes();
+  document.getElementById('notesModal').classList.add('show');
+}
+
+async function loadNotes() {
+  const notes = await api(`/api/clients/${currentNotesClientId}/notes`);
+  document.getElementById('notesList').innerHTML = notes.length === 0 
+    ? '<p style="color:var(--text-light);padding:1rem;">No notes yet</p>'
+    : notes.map(n => `<div class="note-item"><div class="note-meta"><strong>${esc(n.user_name)}</strong> • ${new Date(n.created_at).toLocaleString()}</div><div class="note-text">${esc(n.note)}</div></div>`).join('');
+}
+
+async function addNote() {
+  const note = document.getElementById('newNote').value.trim();
+  if (!note) return;
+  await api(`/api/clients/${currentNotesClientId}/notes`, { method: 'POST', body: JSON.stringify({ note }) });
+  document.getElementById('newNote').value = '';
+  loadNotes();
+}
+
+function showUploadModal() {
+  document.getElementById('excelFile').value = '';
+  document.getElementById('uploadModal').classList.add('show');
+}
+
+async function uploadExcel() {
+  const file = document.getElementById('excelFile').files[0];
+  if (!file) return alert('Please select a file');
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('assigned_to', document.getElementById('uploadAssign').value || '');
+  const res = await fetch('/api/clients/upload', { method: 'POST', body: fd });
+  const data = await res.json();
+  if (res.ok) {
+    alert(`${data.imported} contacts imported!`);
+    closeModal('uploadModal');
+    loadClients();
+  } else {
+    alert(data.error);
+  }
+}
+
+async function loadTeam() {
+  const users = await api('/api/users');
+  document.getElementById('teamBody').innerHTML = users.map(u => `<tr>
+    <td>${esc(u.name)}</td><td>${esc(u.username)}</td><td>${u.role === 'admin' ? '👑 Admin' : '👤 Member'}</td>
+    <td>${u.role !== 'admin' ? `<button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id})">🗑</button>` : ''}</td>
+  </tr>`).join('');
+}
+
+function showUserModal() {
+  ['uName','uUsername','uPassword'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('uRole').value = 'member';
+  document.getElementById('userModal').classList.add('show');
+}
+
+async function saveUser() {
+  const body = { name: document.getElementById('uName').value, username: document.getElementById('uUsername').value, password: document.getElementById('uPassword').value, role: document.getElementById('uRole').value };
+  if (!body.name || !body.username || !body.password) return alert('Fill all fields');
+  try {
+    await api('/api/users', { method: 'POST', body: JSON.stringify(body) });
+    closeModal('userModal');
+    loadTeam();
+    loadUsers();
+  } catch (e) { alert(e.message); }
+}
+
+async function deleteUser(id) {
+  if (!confirm('Delete this member?')) return;
+  await api(`/api/users/${id}`, { method: 'DELETE' });
+  loadTeam();
+  loadUsers();
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('show'); });
+});
+
+checkAuth();
+</script>
+</body>
+</html>
