@@ -47,6 +47,14 @@ db.exec(`
     FOREIGN KEY (created_by) REFERENCES users(id)
   );
 
+  CREATE TABLE IF NOT EXISTS projects (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    location TEXT,
+    description TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
   CREATE TABLE IF NOT EXISTS notes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     client_id INTEGER NOT NULL,
@@ -57,6 +65,9 @@ db.exec(`
     FOREIGN KEY (user_id) REFERENCES users(id)
   );
 `);
+
+// Add project_id to clients if not exists
+try { db.exec('ALTER TABLE clients ADD COLUMN project_id INTEGER REFERENCES projects(id)'); } catch(e) {}
 
 // Create default admin if not exists
 const adminExists = db.prepare('SELECT id FROM users WHERE role = ?').get('admin');
@@ -125,22 +136,48 @@ app.delete('/api/users/:id', auth, adminOnly, (req, res) => {
   res.json({ ok: true });
 });
 
+// Project routes
+app.get('/api/projects', auth, (req, res) => {
+  res.json(db.prepare('SELECT * FROM projects ORDER BY name').all());
+});
+
+app.post('/api/projects', auth, adminOnly, (req, res) => {
+  const { name, location, description } = req.body;
+  const result = db.prepare('INSERT INTO projects (name, location, description) VALUES (?, ?, ?)').run(name, location, description);
+  res.json({ id: result.lastInsertRowid });
+});
+
+app.put('/api/projects/:id', auth, adminOnly, (req, res) => {
+  const { name, location, description } = req.body;
+  db.prepare('UPDATE projects SET name=?, location=?, description=? WHERE id=?').run(name, location, description, req.params.id);
+  res.json({ ok: true });
+});
+
+app.delete('/api/projects/:id', auth, adminOnly, (req, res) => {
+  db.prepare('UPDATE clients SET project_id = NULL WHERE project_id = ?').run(req.params.id);
+  db.prepare('DELETE FROM projects WHERE id = ?').run(req.params.id);
+  res.json({ ok: true });
+});
+
 // Client routes
 app.get('/api/clients', auth, (req, res) => {
   let query, params;
   if (req.user.role === 'admin') {
-    query = `SELECT c.*, u.name as assigned_name FROM clients c LEFT JOIN users u ON c.assigned_to = u.id ORDER BY c.followup_date ASC`;
+    query = `SELECT c.*, u.name as assigned_name, p.name as project_name FROM clients c LEFT JOIN users u ON c.assigned_to = u.id LEFT JOIN projects p ON c.project_id = p.id ORDER BY c.followup_date ASC`;
     params = [];
   } else {
-    query = `SELECT c.*, u.name as assigned_name FROM clients c LEFT JOIN users u ON c.assigned_to = u.id WHERE c.assigned_to = ? ORDER BY c.followup_date ASC`;
+    query = `SELECT c.*, u.name as assigned_name, p.name as project_name FROM clients c LEFT JOIN users u ON c.assigned_to = u.id LEFT JOIN projects p ON c.project_id = p.id WHERE c.assigned_to = ? ORDER BY c.followup_date ASC`;
     params = [req.user.id];
   }
   
-  const { interest_level, search, assigned_to } = req.query;
+  const { interest_level, search, assigned_to, project_id } = req.query;
   let conditions = [];
   
   if (req.user.role === 'admin' && assigned_to) {
     conditions.push(`c.assigned_to = ${parseInt(assigned_to)}`);
+  }
+  if (project_id) {
+    conditions.push(`c.project_id = ${parseInt(project_id)}`);
   }
   if (interest_level) {
     conditions.push(`c.interest_level = '${interest_level.replace(/'/g, "''")}'`);
@@ -161,11 +198,11 @@ app.get('/api/clients', auth, (req, res) => {
 });
 
 app.post('/api/clients', auth, (req, res) => {
-  const { name, contact, email, interest_level, followup_date, assigned_to } = req.body;
+  const { name, contact, email, interest_level, followup_date, assigned_to, project_id } = req.body;
   const assignTo = req.user.role === 'admin' ? (assigned_to || req.user.id) : req.user.id;
   const result = db.prepare(
-    'INSERT INTO clients (name, contact, email, interest_level, followup_date, assigned_to, created_by) VALUES (?, ?, ?, ?, ?, ?, ?)'
-  ).run(name, contact, email, interest_level || 'cold', followup_date, assignTo, req.user.id);
+    'INSERT INTO clients (name, contact, email, interest_level, followup_date, assigned_to, created_by, project_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+  ).run(name, contact, email, interest_level || 'cold', followup_date, assignTo, req.user.id, project_id || null);
   res.json({ id: result.lastInsertRowid });
 });
 
@@ -175,10 +212,10 @@ app.put('/api/clients/:id', auth, (req, res) => {
   if (req.user.role !== 'admin' && client.assigned_to !== req.user.id) {
     return res.status(403).json({ error: 'Not your client' });
   }
-  const { name, contact, email, interest_level, followup_date, assigned_to } = req.body;
+  const { name, contact, email, interest_level, followup_date, assigned_to, project_id } = req.body;
   db.prepare(
-    'UPDATE clients SET name=?, contact=?, email=?, interest_level=?, followup_date=?, assigned_to=?, updated_at=CURRENT_TIMESTAMP WHERE id=?'
-  ).run(name, contact, email, interest_level, followup_date, req.user.role === 'admin' ? (assigned_to || client.assigned_to) : client.assigned_to, req.params.id);
+    'UPDATE clients SET name=?, contact=?, email=?, interest_level=?, followup_date=?, assigned_to=?, project_id=?, updated_at=CURRENT_TIMESTAMP WHERE id=?'
+  ).run(name, contact, email, interest_level, followup_date, req.user.role === 'admin' ? (assigned_to || client.assigned_to) : client.assigned_to, project_id || null, req.params.id);
   res.json({ ok: true });
 });
 
@@ -222,11 +259,12 @@ app.post('/api/clients/upload', auth, upload.single('file'), (req, res) => {
     const data = XLSX.utils.sheet_to_json(sheet);
     
     const insert = db.prepare(
-      'INSERT INTO clients (name, contact, email, interest_level, followup_date, assigned_to, created_by) VALUES (?, ?, ?, ?, ?, ?, ?)'
+      'INSERT INTO clients (name, contact, email, interest_level, followup_date, assigned_to, created_by, project_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
     );
     
     let count = 0;
     const assignTo = req.body.assigned_to || req.user.id;
+    const projectId = req.body.project_id || null;
     
     for (const row of data) {
       const name = row.name || row.Name || row.NAME || row['Client Name'] || '';
@@ -236,7 +274,7 @@ app.post('/api/clients/upload', auth, upload.single('file'), (req, res) => {
       const followup = row.followup_date || row.Followup || row.followup || row['Follow Up'] || '';
       
       if (name) {
-        insert.run(name, String(contact), email, interest, followup, assignTo, req.user.id);
+        insert.run(name, String(contact), email, interest, followup, assignTo, req.user.id, projectId);
         count++;
       }
     }

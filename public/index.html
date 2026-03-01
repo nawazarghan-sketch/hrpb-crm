@@ -4,34 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HRPB CRM - Real Estate Client Management System</title>
-<meta name="description" content="HRPB CRM - Professional real estate CRM for managing clients, installment plans, follow-ups, and team collaboration. Highrise projects and townhouse sales management.">
+<meta name="description" content="HRPB CRM - Professional real estate CRM for managing clients, installment plans, follow-ups, and team collaboration.">
 <meta name="keywords" content="HRPB CRM, real estate CRM, client management, installment plans, property sales, Pakistan real estate">
 <meta name="robots" content="index, follow">
 <meta property="og:title" content="HRPB CRM - Real Estate Client Management">
-<meta property="og:description" content="Professional CRM for real estate teams. Manage clients, follow-ups, and installment plans.">
+<meta property="og:description" content="Professional CRM for real estate teams.">
 <meta property="og:type" content="website">
-<link rel="canonical" href="https://hrpbcrm.com">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-:root {
-  --primary: #2563eb; --primary-dark: #1d4ed8; --bg: #f1f5f9;
-  --card: #ffffff; --text: #1e293b; --text-light: #64748b;
-  --border: #e2e8f0; --danger: #ef4444; --success: #22c55e;
-  --warning: #f59e0b;
-}
+:root { --primary: #2563eb; --primary-dark: #1d4ed8; --bg: #f1f5f9; --card: #ffffff; --text: #1e293b; --text-light: #64748b; --border: #e2e8f0; --danger: #ef4444; --success: #22c55e; --warning: #f59e0b; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-
-/* Login */
 .login-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
 .login-box { background: var(--card); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 360px; }
 .login-box h1 { text-align: center; margin-bottom: 1.5rem; color: var(--primary); }
 .login-box input { width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; font-size: 1rem; }
 .login-box button { width: 100%; padding: 0.75rem; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; }
 .login-box button:hover { background: var(--primary-dark); }
-
-/* Layout */
 .app { display: none; }
-.sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: var(--text); color: white; padding: 1.5rem 0; overflow-y: auto; }
+.sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: var(--text); color: white; padding: 1.5rem 0; overflow-y: auto; z-index: 50; }
 .sidebar h2 { padding: 0 1.5rem; margin-bottom: 2rem; font-size: 1.3rem; }
 .sidebar h2 span { color: var(--primary); }
 .sidebar a { display: block; padding: 0.75rem 1.5rem; color: #94a3b8; text-decoration: none; transition: all 0.2s; cursor: pointer; }
@@ -40,25 +30,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .sidebar .user-info .name { font-weight: 600; }
 .sidebar .user-info .role { font-size: 0.8rem; color: #94a3b8; }
 .sidebar .logout-btn { color: var(--danger); cursor: pointer; font-size: 0.85rem; margin-top: 0.5rem; display: inline-block; }
-
 .main { margin-left: 240px; padding: 2rem; }
 .page { display: none; }
 .page.active { display: block; }
-
-/* Cards & Stats */
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
 .stat-card { background: var(--card); padding: 1.25rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
 .stat-card .label { font-size: 0.85rem; color: var(--text-light); }
 .stat-card .value { font-size: 1.8rem; font-weight: 700; margin-top: 0.25rem; }
-
-/* Table */
 .table-container { background: var(--card); border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; }
 th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border); }
 th { background: #f8fafc; font-weight: 600; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; }
 tr:hover { background: #f8fafc; }
-
-/* Badges */
 .badge { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; display: inline-block; }
 .badge-hot { background: #fef2f2; color: #dc2626; }
 .badge-warm { background: #fff7ed; color: #ea580c; }
@@ -66,8 +49,7 @@ tr:hover { background: #f8fafc; }
 .badge-not_interested { background: #f1f5f9; color: #64748b; }
 .badge-close_won { background: #f0fdf4; color: #16a34a; }
 .badge-close_lost { background: #fef2f2; color: #991b1b; }
-
-/* Buttons */
+.badge-project { background: #f5f3ff; color: #7c3aed; }
 .btn { padding: 0.5rem 1rem; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: all 0.2s; }
 .btn-primary { background: var(--primary); color: white; }
 .btn-primary:hover { background: var(--primary-dark); }
@@ -75,13 +57,9 @@ tr:hover { background: #f8fafc; }
 .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.8rem; }
 .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
 .btn-outline:hover { background: var(--bg); }
-
-/* Toolbar */
 .toolbar { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
 .toolbar input, .toolbar select { padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; }
 .toolbar input[type="text"] { min-width: 200px; }
-
-/* Modal */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
 .modal-overlay.show { display: flex; }
 .modal { background: var(--card); border-radius: 12px; padding: 2rem; width: 500px; max-width: 90vw; max-height: 85vh; overflow-y: auto; }
@@ -91,30 +69,25 @@ tr:hover { background: #f8fafc; }
 .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; }
 .form-group textarea { min-height: 80px; resize: vertical; }
 .form-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; }
-
-/* Notes */
 .notes-list { max-height: 400px; overflow-y: auto; }
 .note-item { padding: 0.75rem; border-bottom: 1px solid var(--border); }
 .note-item .note-meta { font-size: 0.8rem; color: var(--text-light); margin-bottom: 0.35rem; }
 .note-item .note-text { white-space: pre-wrap; }
-
-/* Overdue */
 .overdue { color: var(--danger); font-weight: 600; }
 .today { color: var(--warning); font-weight: 600; }
-
-/* Responsive */
-@media (max-width: 768px) {
-  .sidebar { width: 100%; position: relative; padding: 1rem 0; }
-  .sidebar .user-info { position: relative; }
-  .main { margin-left: 0; }
-}
-
 .page-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; }
+@media (max-width: 768px) {
+  .sidebar { width: 60px; }
+  .sidebar h2, .sidebar a span, .sidebar .user-info .name, .sidebar .user-info .role { display: none; }
+  .sidebar a { text-align: center; padding: 0.75rem 0; }
+  .main { margin-left: 60px; padding: 1rem; }
+  .toolbar { gap: 0.5rem; }
+  .toolbar input[type="text"] { min-width: 120px; }
+}
 </style>
 </head>
 <body>
 
-<!-- Login -->
 <div class="login-container" id="loginPage">
   <div class="login-box">
     <h1>🔮 HRPB CRM</h1>
@@ -125,13 +98,13 @@ tr:hover { background: #f8fafc; }
   </div>
 </div>
 
-<!-- App -->
 <div class="app" id="app">
   <nav class="sidebar">
     <h2>🔮 <span>HRPB</span> CRM</h2>
-    <a onclick="showPage('dashboard')" id="nav-dashboard">📊 Dashboard</a>
-    <a onclick="showPage('clients')" id="nav-clients">👥 Clients</a>
-    <a id="nav-team" onclick="showPage('team')" style="display:none">👔 Team</a>
+    <a onclick="showPage('dashboard')" id="nav-dashboard">📊 <span>Dashboard</span></a>
+    <a onclick="showPage('clients')" id="nav-clients">👥 <span>Clients</span></a>
+    <a onclick="showPage('projects')" id="nav-projects">🏗️ <span>Projects</span></a>
+    <a id="nav-team" onclick="showPage('team')" style="display:none">👔 <span>Team</span></a>
     <div class="user-info">
       <div class="name" id="userName"></div>
       <div class="role" id="userRole"></div>
@@ -153,6 +126,7 @@ tr:hover { background: #f8fafc; }
       <h1 class="page-title">Clients</h1>
       <div class="toolbar">
         <input type="text" id="searchInput" placeholder="Search name or contact..." oninput="loadClients()">
+        <select id="filterProject" onchange="loadClients()"><option value="">All Projects</option></select>
         <select id="filterLevel" onchange="loadClients()">
           <option value="">All Levels</option>
           <option value="hot">🔥 Hot</option>
@@ -169,17 +143,28 @@ tr:hover { background: #f8fafc; }
       </div>
       <div class="table-container">
         <table>
-          <thead>
-            <tr>
-              <th>Name</th><th>Contact</th><th>Level</th><th>Follow-up</th><th id="thAssigned" style="display:none">Assigned To</th><th>Actions</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Name</th><th>Contact</th><th>Project</th><th>Level</th><th>Follow-up</th><th id="thAssigned" style="display:none">Assigned To</th><th>Actions</th></tr></thead>
           <tbody id="clientsBody"></tbody>
         </table>
       </div>
     </div>
 
-    <!-- Team (admin only) -->
+    <!-- Projects -->
+    <div class="page" id="page-projects">
+      <h1 class="page-title">Projects</h1>
+      <div class="toolbar">
+        <div style="flex:1"></div>
+        <button class="btn btn-primary" id="addProjectBtn" style="display:none" onclick="showProjectModal()">+ Add Project</button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead><tr><th>Name</th><th>Location</th><th>Description</th><th>Clients</th><th id="thProjectActions" style="display:none">Actions</th></tr></thead>
+          <tbody id="projectsBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Team -->
     <div class="page" id="page-team">
       <h1 class="page-title">Team Management</h1>
       <div class="toolbar">
@@ -204,21 +189,16 @@ tr:hover { background: #f8fafc; }
     <div class="form-group"><label>Name *</label><input type="text" id="cName"></div>
     <div class="form-group"><label>Contact</label><input type="text" id="cContact"></div>
     <div class="form-group"><label>Email</label><input type="email" id="cEmail"></div>
+    <div class="form-group"><label>Project</label><select id="cProject"><option value="">-- No Project --</option></select></div>
     <div class="form-group">
       <label>Interest Level</label>
       <select id="cLevel">
-        <option value="cold">❄️ Cold</option>
-        <option value="warm">🌤 Warm</option>
-        <option value="hot">🔥 Hot</option>
-        <option value="not_interested">🚫 Not Interested</option>
-        <option value="close_won">✅ Close Won</option>
-        <option value="close_lost">❌ Close Lost</option>
+        <option value="cold">❄️ Cold</option><option value="warm">🌤 Warm</option><option value="hot">🔥 Hot</option>
+        <option value="not_interested">🚫 Not Interested</option><option value="close_won">✅ Close Won</option><option value="close_lost">❌ Close Lost</option>
       </select>
     </div>
     <div class="form-group"><label>Follow-up Date</label><input type="date" id="cFollowup"></div>
-    <div class="form-group" id="cAssignGroup" style="display:none">
-      <label>Assign To</label><select id="cAssign"></select>
-    </div>
+    <div class="form-group" id="cAssignGroup" style="display:none"><label>Assign To</label><select id="cAssign"></select></div>
     <div class="form-actions">
       <button class="btn btn-outline" onclick="closeModal('clientModal')">Cancel</button>
       <button class="btn btn-primary" onclick="saveClient()">Save</button>
@@ -236,9 +216,7 @@ tr:hover { background: #f8fafc; }
     </div>
     <hr style="margin:1rem 0">
     <div class="notes-list" id="notesList"></div>
-    <div class="form-actions">
-      <button class="btn btn-outline" onclick="closeModal('notesModal')">Close</button>
-    </div>
+    <div class="form-actions"><button class="btn btn-outline" onclick="closeModal('notesModal')">Close</button></div>
   </div>
 </div>
 
@@ -246,14 +224,28 @@ tr:hover { background: #f8fafc; }
 <div class="modal-overlay" id="uploadModal">
   <div class="modal">
     <h2>Upload Excel</h2>
-    <p style="margin-bottom:1rem;color:var(--text-light);font-size:0.9rem;">Excel columns: Name, Contact, Email, Interest (hot/warm/cold), Followup date</p>
-    <div class="form-group"><label>Excel File (.xlsx, .xls)</label><input type="file" id="excelFile" accept=".xlsx,.xls,.csv"></div>
-    <div class="form-group" id="uploadAssignGroup" style="display:none">
-      <label>Assign All To</label><select id="uploadAssign"></select>
-    </div>
+    <p style="margin-bottom:1rem;color:var(--text-light);font-size:0.9rem;">Columns: Name, Contact, Email, Interest, Followup date</p>
+    <div class="form-group"><label>Excel File</label><input type="file" id="excelFile" accept=".xlsx,.xls,.csv"></div>
+    <div class="form-group"><label>Project</label><select id="uploadProject"><option value="">-- No Project --</option></select></div>
+    <div class="form-group" id="uploadAssignGroup" style="display:none"><label>Assign All To</label><select id="uploadAssign"></select></div>
     <div class="form-actions">
       <button class="btn btn-outline" onclick="closeModal('uploadModal')">Cancel</button>
       <button class="btn btn-primary" onclick="uploadExcel()">Upload</button>
+    </div>
+  </div>
+</div>
+
+<!-- Project Modal -->
+<div class="modal-overlay" id="projectModal">
+  <div class="modal">
+    <h2 id="projectModalTitle">Add Project</h2>
+    <input type="hidden" id="projId">
+    <div class="form-group"><label>Project Name *</label><input type="text" id="projName"></div>
+    <div class="form-group"><label>Location</label><input type="text" id="projLocation"></div>
+    <div class="form-group"><label>Description</label><textarea id="projDesc"></textarea></div>
+    <div class="form-actions">
+      <button class="btn btn-outline" onclick="closeModal('projectModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProject()">Save</button>
     </div>
   </div>
 </div>
@@ -265,10 +257,7 @@ tr:hover { background: #f8fafc; }
     <div class="form-group"><label>Name *</label><input type="text" id="uName"></div>
     <div class="form-group"><label>Username *</label><input type="text" id="uUsername"></div>
     <div class="form-group"><label>Password *</label><input type="password" id="uPassword"></div>
-    <div class="form-group">
-      <label>Role</label>
-      <select id="uRole"><option value="member">Member</option><option value="admin">Admin</option></select>
-    </div>
+    <div class="form-group"><label>Role</label><select id="uRole"><option value="member">Member</option><option value="admin">Admin</option></select></div>
     <div class="form-actions">
       <button class="btn btn-outline" onclick="closeModal('userModal')">Cancel</button>
       <button class="btn btn-primary" onclick="saveUser()">Save</button>
@@ -277,9 +266,7 @@ tr:hover { background: #f8fafc; }
 </div>
 
 <script>
-let currentUser = null;
-let allUsers = [];
-let currentNotesClientId = null;
+let currentUser = null, allUsers = [], allProjects = [], currentNotesClientId = null;
 
 async function api(url, opts = {}) {
   const res = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...opts });
@@ -290,25 +277,14 @@ async function api(url, opts = {}) {
 
 async function login() {
   try {
-    const user = await api('/api/login', { method: 'POST', body: JSON.stringify({ username: document.getElementById('loginUser').value, password: document.getElementById('loginPass').value }) });
-    currentUser = user;
+    currentUser = await api('/api/login', { method: 'POST', body: JSON.stringify({ username: document.getElementById('loginUser').value, password: document.getElementById('loginPass').value }) });
     initApp();
-  } catch (e) {
-    const el = document.getElementById('loginError');
-    el.textContent = e.message;
-    el.style.display = 'block';
-  }
+  } catch (e) { const el = document.getElementById('loginError'); el.textContent = e.message; el.style.display = 'block'; }
 }
-
 document.getElementById('loginPass').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
 
 async function checkAuth() {
-  try {
-    currentUser = await api('/api/me');
-    initApp();
-  } catch (e) {
-    document.getElementById('loginPage').style.display = 'flex';
-  }
+  try { currentUser = await api('/api/me'); initApp(); } catch (e) { document.getElementById('loginPage').style.display = 'flex'; }
 }
 
 function initApp() {
@@ -316,27 +292,36 @@ function initApp() {
   document.getElementById('app').style.display = 'block';
   document.getElementById('userName').textContent = currentUser.name;
   document.getElementById('userRole').textContent = currentUser.role === 'admin' ? '👑 Admin' : '👤 Member';
-  
   if (currentUser.role === 'admin') {
     document.getElementById('nav-team').style.display = 'block';
     document.getElementById('thAssigned').style.display = '';
     document.getElementById('cAssignGroup').style.display = 'block';
     document.getElementById('uploadAssignGroup').style.display = 'block';
     document.getElementById('filterUser').style.display = '';
+    document.getElementById('addProjectBtn').style.display = '';
+    document.getElementById('thProjectActions').style.display = '';
     loadUsers();
   }
+  loadProjects();
   showPage('dashboard');
 }
 
 async function loadUsers() {
   allUsers = await api('/api/users');
-  const selects = ['cAssign', 'filterUser', 'uploadAssign'];
-  selects.forEach(id => {
+  ['cAssign', 'filterUser', 'uploadAssign'].forEach(id => {
     const el = document.getElementById(id);
     el.innerHTML = id === 'filterUser' ? '<option value="">All Members</option>' : '';
-    allUsers.forEach(u => {
-      el.innerHTML += `<option value="${u.id}">${u.name}</option>`;
-    });
+    allUsers.forEach(u => el.innerHTML += `<option value="${u.id}">${u.name}</option>`);
+  });
+}
+
+async function loadProjects() {
+  allProjects = await api('/api/projects');
+  ['cProject', 'filterProject', 'uploadProject'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = id === 'filterProject' ? '<option value="">All Projects</option>' : '<option value="">-- No Project --</option>';
+    allProjects.forEach(p => el.innerHTML += `<option value="${p.id}">${esc(p.name)}</option>`);
   });
 }
 
@@ -347,35 +332,28 @@ function showPage(page) {
   document.getElementById('nav-' + page)?.classList.add('active');
   if (page === 'dashboard') loadDashboard();
   if (page === 'clients') loadClients();
+  if (page === 'projects') loadProjectsPage();
   if (page === 'team') loadTeam();
 }
 
 async function loadDashboard() {
   const stats = await api('/api/stats');
-  const grid = document.getElementById('statsGrid');
   let html = `<div class="stat-card"><div class="label">Total Clients</div><div class="value">${stats.total}</div></div>`;
   html += `<div class="stat-card"><div class="label">Today's Follow-ups</div><div class="value" style="color:var(--warning)">${stats.todayFollowups}</div></div>`;
   html += `<div class="stat-card"><div class="label">Overdue</div><div class="value" style="color:var(--danger)">${stats.overdueFollowups}</div></div>`;
-  stats.byLevel.forEach(l => {
-    html += `<div class="stat-card"><div class="label">${levelLabel(l.interest_level)}</div><div class="value">${l.c}</div></div>`;
-  });
-  grid.innerHTML = html;
+  stats.byLevel.forEach(l => html += `<div class="stat-card"><div class="label">${levelLabel(l.interest_level)}</div><div class="value">${l.c}</div></div>`);
+  document.getElementById('statsGrid').innerHTML = html;
 
-  // Today's followups
-  const params = new URLSearchParams();
-  const clients = await api('/api/clients?' + params);
+  const clients = await api('/api/clients');
   const today = new Date().toISOString().split('T')[0];
   const todayClients = clients.filter(c => c.followup_date === today);
   const table = document.getElementById('todayTable');
-  if (todayClients.length === 0) {
+  if (!todayClients.length) {
     table.innerHTML = '<p style="padding:1.5rem;color:var(--text-light)">No follow-ups scheduled for today 👍</p>';
   } else {
-    let t = '<table><thead><tr><th>Name</th><th>Contact</th><th>Level</th><th>Actions</th></tr></thead><tbody>';
-    todayClients.forEach(c => {
-      t += `<tr><td>${esc(c.name)}</td><td>${esc(c.contact||'')}</td><td><span class="badge badge-${c.interest_level}">${levelLabel(c.interest_level)}</span></td><td><button class="btn btn-sm btn-outline" onclick="openNotes(${c.id},'${esc(c.name)}')">📝 Notes</button></td></tr>`;
-    });
-    t += '</tbody></table>';
-    table.innerHTML = t;
+    let t = '<table><thead><tr><th>Name</th><th>Contact</th><th>Project</th><th>Level</th><th>Actions</th></tr></thead><tbody>';
+    todayClients.forEach(c => t += `<tr><td>${esc(c.name)}</td><td>${esc(c.contact||'')}</td><td>${c.project_name ? '<span class="badge badge-project">'+esc(c.project_name)+'</span>' : '-'}</td><td><span class="badge badge-${c.interest_level}">${levelLabel(c.interest_level)}</span></td><td><button class="btn btn-sm btn-outline" onclick="openNotes(${c.id},'${esc(c.name)}')">📝 Notes</button></td></tr>`);
+    table.innerHTML = t + '</tbody></table>';
   }
 }
 
@@ -384,40 +362,38 @@ async function loadClients() {
   const search = document.getElementById('searchInput').value;
   const level = document.getElementById('filterLevel').value;
   const user = document.getElementById('filterUser').value;
+  const project = document.getElementById('filterProject').value;
   if (search) params.set('search', search);
   if (level) params.set('interest_level', level);
   if (user) params.set('assigned_to', user);
-  
+  if (project) params.set('project_id', project);
+
   const clients = await api('/api/clients?' + params);
-  const tbody = document.getElementById('clientsBody');
   const today = new Date().toISOString().split('T')[0];
-  
-  tbody.innerHTML = clients.map(c => {
-    let dateClass = '';
-    if (c.followup_date) {
-      if (c.followup_date < today && !['close_won','close_lost','not_interested'].includes(c.interest_level)) dateClass = 'overdue';
-      else if (c.followup_date === today) dateClass = 'today';
+  document.getElementById('clientsBody').innerHTML = clients.map(c => {
+    let dc = '';
+    if (c.followup_date && !['close_won','close_lost','not_interested'].includes(c.interest_level)) {
+      if (c.followup_date < today) dc = 'overdue';
+      else if (c.followup_date === today) dc = 'today';
     }
     return `<tr>
       <td><strong>${esc(c.name)}</strong></td>
       <td>${esc(c.contact||'')}</td>
+      <td>${c.project_name ? '<span class="badge badge-project">'+esc(c.project_name)+'</span>' : '-'}</td>
       <td><span class="badge badge-${c.interest_level}">${levelLabel(c.interest_level)}</span></td>
-      <td class="${dateClass}">${c.followup_date || '-'}</td>
+      <td class="${dc}">${c.followup_date || '-'}</td>
       ${currentUser.role === 'admin' ? `<td>${esc(c.assigned_name||'')}</td>` : ''}
       <td>
         <button class="btn btn-sm btn-outline" onclick="openNotes(${c.id},'${esc(c.name)}')">📝</button>
         <button class="btn btn-sm btn-outline" onclick="editClient(${c.id})">✏️</button>
         <button class="btn btn-sm btn-danger" onclick="deleteClient(${c.id})">🗑</button>
-      </td>
-    </tr>`;
+      </td></tr>`;
   }).join('');
 }
 
 function levelLabel(l) {
-  const map = { hot: '🔥 Hot', warm: '🌤 Warm', cold: '❄️ Cold', not_interested: '🚫 Not Interested', close_won: '✅ Close Won', close_lost: '❌ Close Lost' };
-  return map[l] || l;
+  return { hot:'🔥 Hot', warm:'🌤 Warm', cold:'❄️ Cold', not_interested:'🚫 Not Interested', close_won:'✅ Close Won', close_lost:'❌ Close Lost' }[l] || l;
 }
-
 function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
 function showClientModal(data) {
@@ -428,6 +404,7 @@ function showClientModal(data) {
   document.getElementById('cEmail').value = data?.email || '';
   document.getElementById('cLevel').value = data?.interest_level || 'cold';
   document.getElementById('cFollowup').value = data?.followup_date || '';
+  document.getElementById('cProject').value = data?.project_id || '';
   if (data?.assigned_to) document.getElementById('cAssign').value = data.assigned_to;
   document.getElementById('clientModal').classList.add('show');
 }
@@ -446,6 +423,7 @@ async function saveClient() {
     email: document.getElementById('cEmail').value,
     interest_level: document.getElementById('cLevel').value,
     followup_date: document.getElementById('cFollowup').value,
+    project_id: document.getElementById('cProject').value || null,
     assigned_to: document.getElementById('cAssign').value || undefined
   };
   if (!body.name) return alert('Name is required');
@@ -470,7 +448,7 @@ async function openNotes(clientId, name) {
 
 async function loadNotes() {
   const notes = await api(`/api/clients/${currentNotesClientId}/notes`);
-  document.getElementById('notesList').innerHTML = notes.length === 0 
+  document.getElementById('notesList').innerHTML = notes.length === 0
     ? '<p style="color:var(--text-light);padding:1rem;">No notes yet</p>'
     : notes.map(n => `<div class="note-item"><div class="note-meta"><strong>${esc(n.user_name)}</strong> • ${new Date(n.created_at).toLocaleString()}</div><div class="note-text">${esc(n.note)}</div></div>`).join('');
 }
@@ -493,18 +471,62 @@ async function uploadExcel() {
   if (!file) return alert('Please select a file');
   const fd = new FormData();
   fd.append('file', file);
-  fd.append('assigned_to', document.getElementById('uploadAssign').value || '');
+  fd.append('assigned_to', document.getElementById('uploadAssign')?.value || '');
+  fd.append('project_id', document.getElementById('uploadProject').value || '');
   const res = await fetch('/api/clients/upload', { method: 'POST', body: fd });
   const data = await res.json();
-  if (res.ok) {
-    alert(`${data.imported} contacts imported!`);
-    closeModal('uploadModal');
-    loadClients();
-  } else {
-    alert(data.error);
-  }
+  if (res.ok) { alert(`${data.imported} contacts imported!`); closeModal('uploadModal'); loadClients(); }
+  else alert(data.error);
 }
 
+// Projects
+async function loadProjectsPage() {
+  const projects = await api('/api/projects');
+  const clients = await api('/api/clients');
+  document.getElementById('projectsBody').innerHTML = projects.map(p => {
+    const count = clients.filter(c => c.project_id === p.id).length;
+    return `<tr>
+      <td><strong>${esc(p.name)}</strong></td>
+      <td>${esc(p.location||'')}</td>
+      <td>${esc(p.description||'')}</td>
+      <td><span class="badge badge-project">${count} clients</span></td>
+      ${currentUser.role === 'admin' ? `<td><button class="btn btn-sm btn-outline" onclick="editProject(${p.id})">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteProject(${p.id})">🗑</button></td>` : ''}
+    </tr>`;
+  }).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--text-light);padding:2rem;">No projects yet</td></tr>';
+}
+
+function showProjectModal(data) {
+  document.getElementById('projectModalTitle').textContent = data ? 'Edit Project' : 'Add Project';
+  document.getElementById('projId').value = data?.id || '';
+  document.getElementById('projName').value = data?.name || '';
+  document.getElementById('projLocation').value = data?.location || '';
+  document.getElementById('projDesc').value = data?.description || '';
+  document.getElementById('projectModal').classList.add('show');
+}
+
+async function editProject(id) {
+  const p = allProjects.find(x => x.id === id);
+  if (p) showProjectModal(p);
+}
+
+async function saveProject() {
+  const id = document.getElementById('projId').value;
+  const body = { name: document.getElementById('projName').value, location: document.getElementById('projLocation').value, description: document.getElementById('projDesc').value };
+  if (!body.name) return alert('Project name is required');
+  await api(id ? `/api/projects/${id}` : '/api/projects', { method: id ? 'PUT' : 'POST', body: JSON.stringify(body) });
+  closeModal('projectModal');
+  loadProjects();
+  loadProjectsPage();
+}
+
+async function deleteProject(id) {
+  if (!confirm('Delete this project? Clients will be unassigned.')) return;
+  await api(`/api/projects/${id}`, { method: 'DELETE' });
+  loadProjects();
+  loadProjectsPage();
+}
+
+// Team
 async function loadTeam() {
   const users = await api('/api/users');
   document.getElementById('teamBody').innerHTML = users.map(u => `<tr>
@@ -522,27 +544,20 @@ function showUserModal() {
 async function saveUser() {
   const body = { name: document.getElementById('uName').value, username: document.getElementById('uUsername').value, password: document.getElementById('uPassword').value, role: document.getElementById('uRole').value };
   if (!body.name || !body.username || !body.password) return alert('Fill all fields');
-  try {
-    await api('/api/users', { method: 'POST', body: JSON.stringify(body) });
-    closeModal('userModal');
-    loadTeam();
-    loadUsers();
-  } catch (e) { alert(e.message); }
+  try { await api('/api/users', { method: 'POST', body: JSON.stringify(body) }); closeModal('userModal'); loadTeam(); loadUsers(); }
+  catch (e) { alert(e.message); }
 }
 
 async function deleteUser(id) {
   if (!confirm('Delete this member?')) return;
   await api(`/api/users/${id}`, { method: 'DELETE' });
-  loadTeam();
-  loadUsers();
+  loadTeam(); loadUsers();
 }
 
-function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+async function logout() { await api('/api/logout', { method: 'POST' }); location.reload(); }
 
-// Close modal on overlay click
-document.querySelectorAll('.modal-overlay').forEach(el => {
-  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('show'); });
-});
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+document.querySelectorAll('.modal-overlay').forEach(el => el.addEventListener('click', e => { if (e.target === el) el.classList.remove('show'); }));
 
 checkAuth();
 </script>
