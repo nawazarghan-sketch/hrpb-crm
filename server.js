@@ -9,8 +9,8 @@ const path = require('path');
 const fs = require('fs');
 
 const app = express();
-const PORT = 3000;
-const JWT_SECRET = 'cipher-crm-secret-' + Date.now();
+const PORT = process.env.PORT || 3000;
+const JWT_SECRET = process.env.JWT_SECRET || 'hrpb-crm-stable-secret-key-2024';
 const upload = multer({ dest: '/tmp/uploads/' });
 
 app.use(express.json());
@@ -41,10 +41,12 @@ db.exec(`
     followup_date TEXT,
     assigned_to INTEGER,
     created_by INTEGER,
+    project_id INTEGER,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (assigned_to) REFERENCES users(id),
-    FOREIGN KEY (created_by) REFERENCES users(id)
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (project_id) REFERENCES projects(id)
   );
 
   CREATE TABLE IF NOT EXISTS projects (
@@ -60,14 +62,71 @@ db.exec(`
     client_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
     note TEXT NOT NULL,
+    followup_date TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (client_id) REFERENCES clients(id),
     FOREIGN KEY (user_id) REFERENCES users(id)
   );
+
+  CREATE TABLE IF NOT EXISTS settings (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS custom_fields (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    field_name TEXT NOT NULL,
+    field_key TEXT UNIQUE NOT NULL,
+    field_type TEXT NOT NULL DEFAULT 'text',
+    options TEXT,
+    sort_order INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS client_custom_data (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    client_id INTEGER NOT NULL,
+    field_id INTEGER NOT NULL,
+    value TEXT,
+    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE,
+    FOREIGN KEY (field_id) REFERENCES custom_fields(id) ON DELETE CASCADE,
+    UNIQUE(client_id, field_id)
+  );
+
+  CREATE TABLE IF NOT EXISTS interest_levels (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    key TEXT UNIQUE NOT NULL,
+    name TEXT NOT NULL,
+    emoji TEXT DEFAULT '',
+    color TEXT DEFAULT '#6b7280',
+    bg_color TEXT DEFAULT '#f3f4f6',
+    sort_order INTEGER DEFAULT 0
+  );
 `);
 
-// Add project_id to clients if not exists
-try { db.exec('ALTER TABLE clients ADD COLUMN project_id INTEGER REFERENCES projects(id)'); } catch(e) {}
+// Seed default interest levels if empty
+const levelCount = db.prepare('SELECT COUNT(*) as c FROM interest_levels').get().c;
+if (levelCount === 0) {
+  const levels = [
+    { key: 'cold', name: 'Cold', emoji: '❄️', color: '#2563eb', bg_color: '#eff6ff', sort_order: 0 },
+    { key: 'warm', name: 'Warm', emoji: '🌤', color: '#ea580c', bg_color: '#fff7ed', sort_order: 1 },
+    { key: 'hot', name: 'Hot', emoji: '🔥', color: '#dc2626', bg_color: '#fef2f2', sort_order: 2 },
+    { key: 'not_interested', name: 'Not Interested', emoji: '🚫', color: '#64748b', bg_color: '#f1f5f9', sort_order: 3 },
+    { key: 'close_won', name: 'Close Won', emoji: '✅', color: '#16a34a', bg_color: '#f0fdf4', sort_order: 4 },
+    { key: 'close_lost', name: 'Close Lost', emoji: '❌', color: '#991b1b', bg_color: '#fef2f2', sort_order: 5 },
+  ];
+  const ins = db.prepare('INSERT INTO interest_levels (key, name, emoji, color, bg_color, sort_order) VALUES (?, ?, ?, ?, ?, ?)');
+  for (const l of levels) ins.run(l.key, l.name, l.emoji, l.color, l.bg_color, l.sort_order);
+}
+
+// Seed default theme settings
+const themeExists = db.prepare("SELECT key FROM settings WHERE key = 'theme_primary'").get();
+if (!themeExists) {
+  const ins = db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)');
+  ins.run('theme_primary', '#2563eb');
+  ins.run('theme_sidebar', '#1e293b');
+  ins.run('theme_background', '#f1f5f9');
+}
 
 // Create default admin if not exists
 const adminExists = db.prepare('SELECT id FROM users WHERE role = ?').get('admin');
@@ -114,10 +173,9 @@ app.get('/api/me', auth, (req, res) => {
   res.json(req.user);
 });
 
-// User management (admin only)
+// User management
 app.get('/api/users', auth, adminOnly, (req, res) => {
-  const users = db.prepare('SELECT id, name, username, role, created_at FROM users').all();
-  res.json(users);
+  res.json(db.prepare('SELECT id, name, username, role, created_at FROM users').all());
 });
 
 app.post('/api/users', auth, adminOnly, (req, res) => {
@@ -163,16 +221,16 @@ app.delete('/api/projects/:id', auth, adminOnly, (req, res) => {
 app.get('/api/clients', auth, (req, res) => {
   let query, params;
   if (req.user.role === 'admin') {
-    query = `SELECT c.*, u.name as assigned_name, p.name as project_name FROM clients c LEFT JOIN users u ON c.assigned_to = u.id LEFT JOIN projects p ON c.project_id = p.id ORDER BY c.followup_date ASC`;
+    query = `SELECT c.*, u.name as assigned_name, p.name as project_name FROM clients c LEFT JOIN users u ON c.assigned_to = u.id LEFT JOIN projects p ON c.project_id = p.id`;
     params = [];
   } else {
-    query = `SELECT c.*, u.name as assigned_name, p.name as project_name FROM clients c LEFT JOIN users u ON c.assigned_to = u.id LEFT JOIN projects p ON c.project_id = p.id WHERE c.assigned_to = ? ORDER BY c.followup_date ASC`;
+    query = `SELECT c.*, u.name as assigned_name, p.name as project_name FROM clients c LEFT JOIN users u ON c.assigned_to = u.id LEFT JOIN projects p ON c.project_id = p.id WHERE c.assigned_to = ?`;
     params = [req.user.id];
   }
-  
+
   const { interest_level, search, assigned_to, project_id } = req.query;
   let conditions = [];
-  
+
   if (req.user.role === 'admin' && assigned_to) {
     conditions.push(`c.assigned_to = ${parseInt(assigned_to)}`);
   }
@@ -185,24 +243,51 @@ app.get('/api/clients', auth, (req, res) => {
   if (search) {
     conditions.push(`(c.name LIKE '%${search.replace(/'/g, "''")}%' OR c.contact LIKE '%${search.replace(/'/g, "''")}%')`);
   }
-  
+
   if (conditions.length > 0) {
     if (query.includes('WHERE')) {
-      query = query.replace('ORDER BY', `AND ${conditions.join(' AND ')} ORDER BY`);
+      query += ` AND ${conditions.join(' AND ')}`;
     } else {
-      query = query.replace('ORDER BY', `WHERE ${conditions.join(' AND ')} ORDER BY`);
+      query += ` WHERE ${conditions.join(' AND ')}`;
     }
   }
-  
-  res.json(db.prepare(query).all(...params));
+
+  query += ' ORDER BY c.followup_date ASC';
+
+  const clients = db.prepare(query).all(...params);
+
+  // Attach custom data
+  const customFields = db.prepare('SELECT * FROM custom_fields ORDER BY sort_order').all();
+  if (customFields.length > 0) {
+    for (const client of clients) {
+      const cd = db.prepare('SELECT field_id, value FROM client_custom_data WHERE client_id = ?').all(client.id);
+      client.custom_data = {};
+      for (const d of cd) {
+        const field = customFields.find(f => f.id === d.field_id);
+        if (field) client.custom_data[field.field_key] = d.value;
+      }
+    }
+  }
+
+  res.json(clients);
 });
 
 app.post('/api/clients', auth, (req, res) => {
-  const { name, contact, email, interest_level, followup_date, assigned_to, project_id } = req.body;
+  const { name, contact, email, interest_level, followup_date, assigned_to, project_id, custom_data } = req.body;
   const assignTo = req.user.role === 'admin' ? (assigned_to || req.user.id) : req.user.id;
   const result = db.prepare(
     'INSERT INTO clients (name, contact, email, interest_level, followup_date, assigned_to, created_by, project_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
   ).run(name, contact, email, interest_level || 'cold', followup_date, assignTo, req.user.id, project_id || null);
+
+  if (custom_data && typeof custom_data === 'object') {
+    const ins = db.prepare('INSERT OR REPLACE INTO client_custom_data (client_id, field_id, value) VALUES (?, ?, ?)');
+    const fields = db.prepare('SELECT * FROM custom_fields').all();
+    for (const [key, val] of Object.entries(custom_data)) {
+      const field = fields.find(f => f.field_key === key);
+      if (field) ins.run(result.lastInsertRowid, field.id, val);
+    }
+  }
+
   res.json({ id: result.lastInsertRowid });
 });
 
@@ -212,10 +297,20 @@ app.put('/api/clients/:id', auth, (req, res) => {
   if (req.user.role !== 'admin' && client.assigned_to !== req.user.id) {
     return res.status(403).json({ error: 'Not your client' });
   }
-  const { name, contact, email, interest_level, followup_date, assigned_to, project_id } = req.body;
+  const { name, contact, email, interest_level, followup_date, assigned_to, project_id, custom_data } = req.body;
   db.prepare(
     'UPDATE clients SET name=?, contact=?, email=?, interest_level=?, followup_date=?, assigned_to=?, project_id=?, updated_at=CURRENT_TIMESTAMP WHERE id=?'
   ).run(name, contact, email, interest_level, followup_date, req.user.role === 'admin' ? (assigned_to || client.assigned_to) : client.assigned_to, project_id || null, req.params.id);
+
+  if (custom_data && typeof custom_data === 'object') {
+    const ins = db.prepare('INSERT OR REPLACE INTO client_custom_data (client_id, field_id, value) VALUES (?, ?, ?)');
+    const fields = db.prepare('SELECT * FROM custom_fields').all();
+    for (const [key, val] of Object.entries(custom_data)) {
+      const field = fields.find(f => f.field_key === key);
+      if (field) ins.run(req.params.id, field.id, val);
+    }
+  }
+
   res.json({ ok: true });
 });
 
@@ -225,6 +320,7 @@ app.delete('/api/clients/:id', auth, (req, res) => {
   if (req.user.role !== 'admin' && client.assigned_to !== req.user.id) {
     return res.status(403).json({ error: 'Not your client' });
   }
+  db.prepare('DELETE FROM client_custom_data WHERE client_id = ?').run(req.params.id);
   db.prepare('DELETE FROM notes WHERE client_id = ?').run(req.params.id);
   db.prepare('DELETE FROM clients WHERE id = ?').run(req.params.id);
   res.json({ ok: true });
@@ -247,7 +343,14 @@ app.post('/api/clients/:id/notes', auth, (req, res) => {
   if (req.user.role !== 'admin' && client.assigned_to !== req.user.id) {
     return res.status(403).json({ error: 'Not your client' });
   }
-  const result = db.prepare('INSERT INTO notes (client_id, user_id, note) VALUES (?, ?, ?)').run(req.params.id, req.user.id, req.body.note);
+  const { note, followup_date } = req.body;
+  const result = db.prepare('INSERT INTO notes (client_id, user_id, note, followup_date) VALUES (?, ?, ?, ?)').run(req.params.id, req.user.id, note, followup_date || null);
+
+  // Auto-update client followup_date if provided
+  if (followup_date) {
+    db.prepare('UPDATE clients SET followup_date = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(followup_date, req.params.id);
+  }
+
   res.json({ id: result.lastInsertRowid });
 });
 
@@ -257,28 +360,28 @@ app.post('/api/clients/upload', auth, upload.single('file'), (req, res) => {
     const workbook = XLSX.readFile(req.file.path);
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const data = XLSX.utils.sheet_to_json(sheet);
-    
+
     const insert = db.prepare(
       'INSERT INTO clients (name, contact, email, interest_level, followup_date, assigned_to, created_by, project_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
     );
-    
+
     let count = 0;
     const assignTo = req.body.assigned_to || req.user.id;
     const projectId = req.body.project_id || null;
-    
+
     for (const row of data) {
       const name = row.name || row.Name || row.NAME || row['Client Name'] || '';
       const contact = row.contact || row.Contact || row.CONTACT || row.Phone || row.phone || row.PHONE || row.Mobile || '';
       const email = row.email || row.Email || row.EMAIL || '';
       const interest = row.interest_level || row.Interest || row.interest || row.Status || row.status || 'cold';
       const followup = row.followup_date || row.Followup || row.followup || row['Follow Up'] || '';
-      
+
       if (name) {
         insert.run(name, String(contact), email, interest, followup, assignTo, req.user.id, projectId);
         count++;
       }
     }
-    
+
     fs.unlinkSync(req.file.path);
     res.json({ imported: count });
   } catch (e) {
@@ -286,7 +389,7 @@ app.post('/api/clients/upload', auth, upload.single('file'), (req, res) => {
   }
 });
 
-// Dashboard stats (admin)
+// Dashboard stats
 app.get('/api/stats', auth, (req, res) => {
   if (req.user.role === 'admin') {
     const total = db.prepare('SELECT COUNT(*) as c FROM clients').get().c;
@@ -294,16 +397,86 @@ app.get('/api/stats', auth, (req, res) => {
     const byUser = db.prepare('SELECT u.name, COUNT(c.id) as c FROM users u LEFT JOIN clients c ON c.assigned_to = u.id GROUP BY u.id').all();
     const todayFollowups = db.prepare("SELECT COUNT(*) as c FROM clients WHERE followup_date = date('now')").get().c;
     const overdueFollowups = db.prepare("SELECT COUNT(*) as c FROM clients WHERE followup_date < date('now') AND interest_level NOT IN ('close_won','close_lost','not_interested')").get().c;
-    res.json({ total, byLevel, byUser, todayFollowups, overdueFollowups });
+    const recentClients = db.prepare("SELECT COUNT(*) as c FROM clients WHERE created_at >= date('now', '-7 days')").get().c;
+    res.json({ total, byLevel, byUser, todayFollowups, overdueFollowups, recentClients });
   } else {
     const total = db.prepare('SELECT COUNT(*) as c FROM clients WHERE assigned_to = ?').get(req.user.id).c;
     const byLevel = db.prepare('SELECT interest_level, COUNT(*) as c FROM clients WHERE assigned_to = ? GROUP BY interest_level').all(req.user.id);
     const todayFollowups = db.prepare("SELECT COUNT(*) as c FROM clients WHERE assigned_to = ? AND followup_date = date('now')").get(req.user.id).c;
     const overdueFollowups = db.prepare("SELECT COUNT(*) as c FROM clients WHERE assigned_to = ? AND followup_date < date('now') AND interest_level NOT IN ('close_won','close_lost','not_interested')").get(req.user.id).c;
-    res.json({ total, byLevel, byUser: [], todayFollowups, overdueFollowups });
+    res.json({ total, byLevel, byUser: [], todayFollowups, overdueFollowups, recentClients: 0 });
   }
 });
 
+// ===== SETTINGS API =====
+
+// Interest levels
+app.get('/api/interest-levels', auth, (req, res) => {
+  res.json(db.prepare('SELECT * FROM interest_levels ORDER BY sort_order').all());
+});
+
+app.post('/api/interest-levels', auth, adminOnly, (req, res) => {
+  const { key, name, emoji, color, bg_color } = req.body;
+  if (!key || !name) return res.status(400).json({ error: 'Key and name required' });
+  const maxOrder = db.prepare('SELECT MAX(sort_order) as m FROM interest_levels').get().m || 0;
+  try {
+    const result = db.prepare('INSERT INTO interest_levels (key, name, emoji, color, bg_color, sort_order) VALUES (?, ?, ?, ?, ?, ?)').run(key, name, emoji || '', color || '#6b7280', bg_color || '#f3f4f6', maxOrder + 1);
+    res.json({ id: result.lastInsertRowid });
+  } catch (e) {
+    res.status(400).json({ error: 'Key already exists' });
+  }
+});
+
+app.put('/api/interest-levels/:id', auth, adminOnly, (req, res) => {
+  const { name, emoji, color, bg_color } = req.body;
+  db.prepare('UPDATE interest_levels SET name=?, emoji=?, color=?, bg_color=? WHERE id=?').run(name, emoji, color, bg_color, req.params.id);
+  res.json({ ok: true });
+});
+
+app.delete('/api/interest-levels/:id', auth, adminOnly, (req, res) => {
+  db.prepare('DELETE FROM interest_levels WHERE id = ?').run(req.params.id);
+  res.json({ ok: true });
+});
+
+// Custom fields
+app.get('/api/custom-fields', auth, (req, res) => {
+  res.json(db.prepare('SELECT * FROM custom_fields ORDER BY sort_order').all());
+});
+
+app.post('/api/custom-fields', auth, adminOnly, (req, res) => {
+  const { field_name, field_key, field_type, options } = req.body;
+  if (!field_name || !field_key) return res.status(400).json({ error: 'Name and key required' });
+  const maxOrder = db.prepare('SELECT MAX(sort_order) as m FROM custom_fields').get().m || 0;
+  try {
+    const result = db.prepare('INSERT INTO custom_fields (field_name, field_key, field_type, options, sort_order) VALUES (?, ?, ?, ?, ?)').run(field_name, field_key, field_type || 'text', options || null, maxOrder + 1);
+    res.json({ id: result.lastInsertRowid });
+  } catch (e) {
+    res.status(400).json({ error: 'Field key already exists' });
+  }
+});
+
+app.delete('/api/custom-fields/:id', auth, adminOnly, (req, res) => {
+  db.prepare('DELETE FROM client_custom_data WHERE field_id = ?').run(req.params.id);
+  db.prepare('DELETE FROM custom_fields WHERE id = ?').run(req.params.id);
+  res.json({ ok: true });
+});
+
+// Theme settings
+app.get('/api/settings/theme', auth, (req, res) => {
+  const rows = db.prepare("SELECT key, value FROM settings WHERE key LIKE 'theme_%'").all();
+  const theme = {};
+  for (const r of rows) theme[r.key] = r.value;
+  res.json(theme);
+});
+
+app.put('/api/settings/theme', auth, adminOnly, (req, res) => {
+  const upd = db.prepare('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)');
+  for (const [key, value] of Object.entries(req.body)) {
+    if (key.startsWith('theme_')) upd.run(key, value);
+  }
+  res.json({ ok: true });
+});
+
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`CRM running on http://localhost:${PORT}`);
+  console.log(`HRPB CRM running on http://localhost:${PORT}`);
 });

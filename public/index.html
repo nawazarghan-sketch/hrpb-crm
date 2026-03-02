@@ -3,147 +3,238 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HRPB CRM - Real Estate Client Management System</title>
-<meta name="description" content="HRPB CRM - Professional real estate CRM for managing clients, installment plans, follow-ups, and team collaboration.">
-<meta name="keywords" content="HRPB CRM, real estate CRM, client management, installment plans, property sales, Pakistan real estate">
-<meta name="robots" content="index, follow">
-<meta property="og:title" content="HRPB CRM - Real Estate Client Management">
-<meta property="og:description" content="Professional CRM for real estate teams.">
-<meta property="og:type" content="website">
+<title>HRPB CRM - Real Estate Client Management</title>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-:root { --primary: #2563eb; --primary-dark: #1d4ed8; --bg: #f1f5f9; --card: #ffffff; --text: #1e293b; --text-light: #64748b; --border: #e2e8f0; --danger: #ef4444; --success: #22c55e; --warning: #f59e0b; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-.login-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-.login-box { background: var(--card); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 360px; }
-.login-box h1 { text-align: center; margin-bottom: 1.5rem; color: var(--primary); }
-.login-box input { width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; font-size: 1rem; }
-.login-box button { width: 100%; padding: 0.75rem; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; }
-.login-box button:hover { background: var(--primary-dark); }
-.app { display: none; }
-.sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: var(--text); color: white; padding: 1.5rem 0; overflow-y: auto; z-index: 50; }
-.sidebar h2 { padding: 0 1.5rem; margin-bottom: 2rem; font-size: 1.3rem; }
-.sidebar h2 span { color: var(--primary); }
-.sidebar a { display: block; padding: 0.75rem 1.5rem; color: #94a3b8; text-decoration: none; transition: all 0.2s; cursor: pointer; }
-.sidebar a:hover, .sidebar a.active { background: rgba(255,255,255,0.1); color: white; }
-.sidebar .user-info { position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); }
-.sidebar .user-info .name { font-weight: 600; }
-.sidebar .user-info .role { font-size: 0.8rem; color: #94a3b8; }
-.sidebar .logout-btn { color: var(--danger); cursor: pointer; font-size: 0.85rem; margin-top: 0.5rem; display: inline-block; }
-.main { margin-left: 240px; padding: 2rem; }
-.page { display: none; }
-.page.active { display: block; }
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-.stat-card { background: var(--card); padding: 1.25rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-.stat-card .label { font-size: 0.85rem; color: var(--text-light); }
-.stat-card .value { font-size: 1.8rem; font-weight: 700; margin-top: 0.25rem; }
-.table-container { background: var(--card); border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; }
-th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border); }
-th { background: #f8fafc; font-weight: 600; font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; }
-tr:hover { background: #f8fafc; }
-.badge { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; display: inline-block; }
-.badge-hot { background: #fef2f2; color: #dc2626; }
-.badge-warm { background: #fff7ed; color: #ea580c; }
-.badge-cold { background: #eff6ff; color: #2563eb; }
-.badge-not_interested { background: #f1f5f9; color: #64748b; }
-.badge-close_won { background: #f0fdf4; color: #16a34a; }
-.badge-close_lost { background: #fef2f2; color: #991b1b; }
-.badge-project { background: #f5f3ff; color: #7c3aed; }
-.btn { padding: 0.5rem 1rem; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: all 0.2s; }
-.btn-primary { background: var(--primary); color: white; }
-.btn-primary:hover { background: var(--primary-dark); }
-.btn-danger { background: var(--danger); color: white; }
-.btn-sm { padding: 0.35rem 0.75rem; font-size: 0.8rem; }
-.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
-.btn-outline:hover { background: var(--bg); }
-.toolbar { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
-.toolbar input, .toolbar select { padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; }
-.toolbar input[type="text"] { min-width: 200px; }
-.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
-.modal-overlay.show { display: flex; }
-.modal { background: var(--card); border-radius: 12px; padding: 2rem; width: 500px; max-width: 90vw; max-height: 85vh; overflow-y: auto; }
-.modal h2 { margin-bottom: 1.5rem; }
-.form-group { margin-bottom: 1rem; }
-.form-group label { display: block; margin-bottom: 0.35rem; font-weight: 500; font-size: 0.9rem; }
-.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; }
-.form-group textarea { min-height: 80px; resize: vertical; }
-.form-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; }
-.notes-list { max-height: 400px; overflow-y: auto; }
-.note-item { padding: 0.75rem; border-bottom: 1px solid var(--border); }
-.note-item .note-meta { font-size: 0.8rem; color: var(--text-light); margin-bottom: 0.35rem; }
-.note-item .note-text { white-space: pre-wrap; }
-.overdue { color: var(--danger); font-weight: 600; }
-.today { color: var(--warning); font-weight: 600; }
-.page-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; }
-@media (max-width: 768px) {
-  .sidebar { width: 60px; }
-  .sidebar h2, .sidebar a span, .sidebar .user-info .name, .sidebar .user-info .role { display: none; }
-  .sidebar a { text-align: center; padding: 0.75rem 0; }
-  .main { margin-left: 60px; padding: 1rem; }
-  .toolbar { gap: 0.5rem; }
-  .toolbar input[type="text"] { min-width: 120px; }
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--primary:#2563eb;--primary-dark:#1d4ed8;--primary-light:#3b82f6;--sidebar-bg:#1e293b;--bg:#f1f5f9;--card:#ffffff;--text:#1e293b;--text-light:#64748b;--border:#e2e8f0;--danger:#ef4444;--success:#22c55e;--warning:#f59e0b;--shadow:0 1px 3px rgba(0,0,0,0.08),0 4px 12px rgba(0,0,0,0.04);--shadow-lg:0 4px 24px rgba(0,0,0,0.12);--radius:12px;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
+::selection{background:var(--primary);color:#fff;}
+input,select,textarea,button{font-family:inherit;}
+
+/* Login */
+.login-container{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);}
+.login-box{background:#fff;padding:2.5rem;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.2);width:380px;text-align:center;}
+.login-box .logo{font-size:2.5rem;margin-bottom:0.25rem;}
+.login-box h1{font-size:1.5rem;margin-bottom:0.25rem;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.login-box p.sub{color:var(--text-light);font-size:0.9rem;margin-bottom:1.75rem;}
+.login-box input{width:100%;padding:0.85rem 1rem;border:2px solid var(--border);border-radius:10px;margin-bottom:0.75rem;font-size:0.95rem;transition:border 0.2s;outline:none;background:#f8fafc;}
+.login-box input:focus{border-color:var(--primary);background:#fff;}
+.login-box button{width:100%;padding:0.85rem;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;}
+.login-box button:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(102,126,234,0.4);}
+.login-box .error{color:var(--danger);margin-top:0.75rem;font-size:0.9rem;display:none;}
+
+/* App */
+.app{display:none;}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;background:var(--sidebar-bg);color:#fff;display:flex;flex-direction:column;z-index:50;transition:all 0.3s;}
+.sidebar-header{padding:1.5rem 1.25rem;display:flex;align-items:center;gap:0.75rem;border-bottom:1px solid rgba(255,255,255,0.08);}
+.sidebar-header .logo-icon{width:40px;height:40px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0;}
+.sidebar-header .logo-text{font-size:1.1rem;font-weight:700;line-height:1.2;}
+.sidebar-header .logo-text small{font-size:0.7rem;font-weight:400;color:rgba(255,255,255,0.5);display:block;}
+.sidebar-nav{flex:1;padding:0.75rem 0;overflow-y:auto;}
+.sidebar-nav a{display:flex;align-items:center;gap:0.75rem;padding:0.7rem 1.25rem;color:rgba(255,255,255,0.6);text-decoration:none;transition:all 0.2s;cursor:pointer;font-size:0.9rem;font-weight:500;border-left:3px solid transparent;margin:1px 0;}
+.sidebar-nav a:hover{color:#fff;background:rgba(255,255,255,0.06);}
+.sidebar-nav a.active{color:#fff;background:rgba(255,255,255,0.1);border-left-color:var(--primary-light);}
+.sidebar-nav a .icon{width:20px;text-align:center;font-size:1.1rem;flex-shrink:0;}
+.sidebar-nav .nav-divider{height:1px;background:rgba(255,255,255,0.08);margin:0.5rem 1.25rem;}
+.sidebar-user{padding:1rem 1.25rem;border-top:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:0.75rem;}
+.sidebar-user .avatar{width:36px;height:36px;background:linear-gradient(135deg,var(--primary),#764ba2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;font-weight:700;flex-shrink:0;}
+.sidebar-user .info{flex:1;min-width:0;}
+.sidebar-user .info .name{font-size:0.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sidebar-user .info .role{font-size:0.7rem;color:rgba(255,255,255,0.5);}
+.sidebar-user .logout{background:none;border:none;color:rgba(255,255,255,0.4);cursor:pointer;font-size:1.1rem;padding:4px;transition:color 0.2s;}
+.sidebar-user .logout:hover{color:var(--danger);}
+
+.main{margin-left:260px;padding:1.5rem 2rem;min-height:100vh;transition:margin 0.3s;}
+.page{display:none;animation:fadeIn 0.3s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;}
+.page-title{font-size:1.6rem;font-weight:700;display:flex;align-items:center;gap:0.5rem;}
+.page-title .icon{font-size:1.4rem;}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem;}
+.stat-card{background:var(--card);padding:1.25rem 1.5rem;border-radius:var(--radius);box-shadow:var(--shadow);position:relative;overflow:hidden;transition:transform 0.2s,box-shadow 0.2s;}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+.stat-card .stat-icon{position:absolute;right:1rem;top:1rem;font-size:2rem;opacity:0.15;}
+.stat-card .label{font-size:0.8rem;color:var(--text-light);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;}
+.stat-card .value{font-size:2rem;font-weight:800;margin-top:0.25rem;line-height:1;}
+.stat-card.accent{background:linear-gradient(135deg,var(--primary),#764ba2);color:#fff;}
+.stat-card.accent .label{color:rgba(255,255,255,0.8);}
+.stat-card.accent .stat-icon{color:#fff;opacity:0.2;}
+
+/* Charts */
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;}
+.chart-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.5rem;}
+.chart-card h3{font-size:0.95rem;margin-bottom:1rem;color:var(--text);font-weight:600;}
+.bar-chart{display:flex;flex-direction:column;gap:0.6rem;}
+.bar-item{display:flex;align-items:center;gap:0.75rem;}
+.bar-item .bar-label{font-size:0.8rem;color:var(--text-light);min-width:100px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bar-item .bar-track{flex:1;height:24px;background:#f1f5f9;border-radius:6px;overflow:hidden;}
+.bar-item .bar-fill{height:100%;border-radius:6px;transition:width 0.6s ease;min-width:2px;display:flex;align-items:center;padding-left:8px;}
+.bar-item .bar-fill span{font-size:0.7rem;font-weight:700;color:#fff;white-space:nowrap;}
+
+/* Tables */
+.table-container{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;}
+table{width:100%;border-collapse:collapse;}
+th,td{padding:0.75rem 1rem;text-align:left;border-bottom:1px solid var(--border);}
+th{background:#f8fafc;font-weight:600;font-size:0.75rem;color:var(--text-light);text-transform:uppercase;letter-spacing:0.5px;}
+tbody tr{transition:background 0.15s;}
+tbody tr:hover{background:#f8fafc;}
+tbody tr:last-child td{border-bottom:none;}
+
+.badge{padding:0.2rem 0.65rem;border-radius:20px;font-size:0.75rem;font-weight:600;display:inline-flex;align-items:center;gap:0.25rem;white-space:nowrap;}
+.badge-project{background:#f5f3ff;color:#7c3aed;}
+
+/* Buttons */
+.btn{padding:0.55rem 1.1rem;border:none;border-radius:8px;cursor:pointer;font-size:0.875rem;font-weight:500;transition:all 0.2s;display:inline-flex;align-items:center;gap:0.4rem;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:var(--primary-dark);box-shadow:0 4px 12px rgba(37,99,235,0.3);}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn-sm{padding:0.35rem 0.7rem;font-size:0.78rem;}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text);}
+.btn-outline:hover{background:var(--bg);border-color:#cbd5e1;}
+.btn-icon{width:32px;height:32px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;border:1.5px solid var(--border);background:#fff;cursor:pointer;transition:all 0.2s;font-size:0.9rem;}
+.btn-icon:hover{background:var(--bg);}
+
+/* Toolbar */
+.toolbar{display:flex;gap:0.75rem;margin-bottom:1.25rem;flex-wrap:wrap;align-items:center;}
+.toolbar input,.toolbar select{padding:0.55rem 0.85rem;border:1.5px solid var(--border);border-radius:8px;font-size:0.875rem;background:#fff;outline:none;transition:border 0.2s;}
+.toolbar input:focus,.toolbar select:focus{border-color:var(--primary);}
+.toolbar input[type="text"]{min-width:220px;}
+.toolbar .spacer{flex:1;}
+
+/* Modals */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);z-index:100;align-items:center;justify-content:center;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--card);border-radius:16px;padding:0;width:520px;max-width:92vw;max-height:88vh;overflow:hidden;box-shadow:0 24px 48px rgba(0,0,0,0.2);animation:modalIn 0.25s ease;}
+@keyframes modalIn{from{opacity:0;transform:scale(0.95) translateY(10px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.modal-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-header h2{font-size:1.15rem;font-weight:700;}
+.modal-header .close-btn{background:none;border:none;font-size:1.25rem;cursor:pointer;color:var(--text-light);padding:4px;line-height:1;}
+.modal-body{padding:1.5rem;overflow-y:auto;max-height:calc(88vh - 140px);}
+.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:0.75rem;justify-content:flex-end;}
+.form-group{margin-bottom:1rem;}
+.form-group label{display:block;margin-bottom:0.35rem;font-weight:600;font-size:0.82rem;color:var(--text);}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:0.6rem 0.85rem;border:1.5px solid var(--border);border-radius:8px;font-size:0.9rem;outline:none;transition:border 0.2s;background:#fff;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--primary);}
+.form-group textarea{min-height:80px;resize:vertical;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+
+/* Notes */
+.notes-list{max-height:350px;overflow-y:auto;}
+.note-item{padding:1rem;border-bottom:1px solid var(--border);transition:background 0.15s;}
+.note-item:hover{background:#f8fafc;}
+.note-item:last-child{border-bottom:none;}
+.note-meta{font-size:0.78rem;color:var(--text-light);margin-bottom:0.35rem;display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;}
+.note-meta .followup-tag{background:#fff7ed;color:#ea580c;padding:0.1rem 0.45rem;border-radius:4px;font-size:0.7rem;font-weight:600;}
+.note-text{white-space:pre-wrap;font-size:0.9rem;line-height:1.5;}
+
+.overdue{color:var(--danger);font-weight:600;}
+.today{color:var(--warning);font-weight:600;}
+
+/* Settings */
+.settings-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:1.5rem;}
+.settings-tabs a{padding:0.75rem 1.25rem;cursor:pointer;font-size:0.9rem;font-weight:500;color:var(--text-light);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.2s;}
+.settings-tabs a:hover{color:var(--text);}
+.settings-tabs a.active{color:var(--primary);border-bottom-color:var(--primary);}
+.settings-section{display:none;animation:fadeIn 0.2s ease;}
+.settings-section.active{display:block;}
+.settings-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.5rem;margin-bottom:1.5rem;}
+.settings-card h3{font-size:1rem;font-weight:600;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;}
+.level-row,.field-row{display:flex;align-items:center;gap:0.75rem;padding:0.65rem 0;border-bottom:1px solid var(--border);}
+.level-row:last-child,.field-row:last-child{border-bottom:none;}
+.level-preview{display:inline-flex;align-items:center;gap:0.35rem;padding:0.2rem 0.65rem;border-radius:20px;font-size:0.8rem;font-weight:600;}
+.color-input-group{display:flex;align-items:center;gap:0.5rem;}
+.color-input-group input[type="color"]{width:36px;height:30px;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;padding:2px;}
+.color-input-group label{font-size:0.8rem;color:var(--text-light);min-width:80px;}
+
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--text-light);}
+.empty-state .icon{font-size:3rem;margin-bottom:0.75rem;opacity:0.4;}
+.empty-state p{font-size:0.95rem;}
+
+/* Mobile */
+.mobile-toggle{display:none;position:fixed;top:1rem;left:1rem;z-index:60;background:var(--card);border:none;border-radius:8px;padding:0.5rem 0.65rem;box-shadow:var(--shadow);font-size:1.25rem;cursor:pointer;}
+@media(max-width:768px){
+  .mobile-toggle{display:block;}
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;padding:1rem;padding-top:3.5rem;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .chart-row{grid-template-columns:1fr;}
+  .toolbar input[type="text"]{min-width:140px;}
+  .form-row{grid-template-columns:1fr;}
+  .modal{width:95vw;}
 }
+@media(max-width:480px){.stats-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 
 <div class="login-container" id="loginPage">
   <div class="login-box">
-    <h1>🔮 HRPB CRM</h1>
+    <div class="logo">🔮</div>
+    <h1>HRPB CRM</h1>
+    <p class="sub">Real Estate Client Management</p>
     <input type="text" id="loginUser" placeholder="Username" autofocus>
     <input type="password" id="loginPass" placeholder="Password">
-    <button onclick="login()">Login</button>
-    <p id="loginError" style="color:red;text-align:center;margin-top:0.75rem;display:none;"></p>
+    <button onclick="login()">Sign In</button>
+    <p class="error" id="loginError"></p>
   </div>
 </div>
 
+<button class="mobile-toggle" id="mobileToggle" onclick="toggleSidebar()">☰</button>
+
 <div class="app" id="app">
-  <nav class="sidebar">
-    <h2>🔮 <span>HRPB</span> CRM</h2>
-    <a onclick="showPage('dashboard')" id="nav-dashboard">📊 <span>Dashboard</span></a>
-    <a onclick="showPage('clients')" id="nav-clients">👥 <span>Clients</span></a>
-    <a onclick="showPage('projects')" id="nav-projects">🏗️ <span>Projects</span></a>
-    <a id="nav-team" onclick="showPage('team')" style="display:none">👔 <span>Team</span></a>
-    <div class="user-info">
-      <div class="name" id="userName"></div>
-      <div class="role" id="userRole"></div>
-      <span class="logout-btn" onclick="logout()">Logout</span>
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon">🔮</div>
+      <div class="logo-text">HRPB CRM<small>Real Estate Management</small></div>
+    </div>
+    <div class="sidebar-nav">
+      <a onclick="showPage('dashboard')" id="nav-dashboard"><span class="icon">📊</span>Dashboard</a>
+      <a onclick="showPage('clients')" id="nav-clients"><span class="icon">👥</span>Clients</a>
+      <a onclick="showPage('projects')" id="nav-projects"><span class="icon">🏗️</span>Projects</a>
+      <a id="nav-team" onclick="showPage('team')" style="display:none"><span class="icon">👔</span>Team</a>
+      <div class="nav-divider"></div>
+      <a id="nav-settings" onclick="showPage('settings')" style="display:none"><span class="icon">⚙️</span>Settings</a>
+    </div>
+    <div class="sidebar-user">
+      <div class="avatar" id="userAvatar"></div>
+      <div class="info"><div class="name" id="userName"></div><div class="role" id="userRole"></div></div>
+      <button class="logout" onclick="logout()" title="Logout">⏻</button>
     </div>
   </nav>
 
   <div class="main">
     <!-- Dashboard -->
     <div class="page" id="page-dashboard">
-      <h1 class="page-title">Dashboard</h1>
+      <div class="page-header"><h1 class="page-title"><span class="icon">📊</span> Dashboard</h1></div>
       <div class="stats-grid" id="statsGrid"></div>
-      <h3 style="margin-bottom:1rem;">Today's Follow-ups</h3>
+      <div class="chart-row" id="chartRow"></div>
+      <h3 style="margin-bottom:1rem;font-size:1rem;">📅 Today's Follow-ups</h3>
       <div class="table-container" id="todayTable"></div>
     </div>
 
     <!-- Clients -->
     <div class="page" id="page-clients">
-      <h1 class="page-title">Clients</h1>
+      <div class="page-header">
+        <h1 class="page-title"><span class="icon">👥</span> Clients</h1>
+        <div style="display:flex;gap:0.5rem;">
+          <button class="btn btn-outline" onclick="showUploadModal()">📤 Upload Excel</button>
+          <button class="btn btn-primary" onclick="showClientModal()">+ Add Client</button>
+        </div>
+      </div>
       <div class="toolbar">
-        <input type="text" id="searchInput" placeholder="Search name or contact..." oninput="loadClients()">
+        <input type="text" id="searchInput" placeholder="🔍 Search name or contact..." oninput="debouncedLoadClients()">
         <select id="filterProject" onchange="loadClients()"><option value="">All Projects</option></select>
-        <select id="filterLevel" onchange="loadClients()">
-          <option value="">All Levels</option>
-          <option value="hot">🔥 Hot</option>
-          <option value="warm">🌤 Warm</option>
-          <option value="cold">❄️ Cold</option>
-          <option value="not_interested">🚫 Not Interested</option>
-          <option value="close_won">✅ Close Won</option>
-          <option value="close_lost">❌ Close Lost</option>
-        </select>
-        <select id="filterUser" onchange="loadClients()" style="display:none"></select>
-        <div style="flex:1"></div>
-        <button class="btn btn-outline" onclick="showUploadModal()">📤 Upload Excel</button>
-        <button class="btn btn-primary" onclick="showClientModal()">+ Add Client</button>
+        <select id="filterLevel" onchange="loadClients()"></select>
+        <select id="filterUser" onchange="loadClients()" style="display:none"><option value="">All Members</option></select>
       </div>
       <div class="table-container">
         <table>
-          <thead><tr><th>Name</th><th>Contact</th><th>Project</th><th>Level</th><th>Follow-up</th><th id="thAssigned" style="display:none">Assigned To</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Client</th><th>Contact</th><th>Project</th><th>Level</th><th>Follow-up</th><th id="thAssigned" style="display:none">Assigned</th><th>Actions</th></tr></thead>
           <tbody id="clientsBody"></tbody>
         </table>
       </div>
@@ -151,9 +242,8 @@ tr:hover { background: #f8fafc; }
 
     <!-- Projects -->
     <div class="page" id="page-projects">
-      <h1 class="page-title">Projects</h1>
-      <div class="toolbar">
-        <div style="flex:1"></div>
+      <div class="page-header">
+        <h1 class="page-title"><span class="icon">🏗️</span> Projects</h1>
         <button class="btn btn-primary" id="addProjectBtn" style="display:none" onclick="showProjectModal()">+ Add Project</button>
       </div>
       <div class="table-container">
@@ -166,9 +256,8 @@ tr:hover { background: #f8fafc; }
 
     <!-- Team -->
     <div class="page" id="page-team">
-      <h1 class="page-title">Team Management</h1>
-      <div class="toolbar">
-        <div style="flex:1"></div>
+      <div class="page-header">
+        <h1 class="page-title"><span class="icon">👔</span> Team Management</h1>
         <button class="btn btn-primary" onclick="showUserModal()">+ Add Member</button>
       </div>
       <div class="table-container">
@@ -178,57 +267,131 @@ tr:hover { background: #f8fafc; }
         </table>
       </div>
     </div>
+
+    <!-- Settings -->
+    <div class="page" id="page-settings">
+      <div class="page-header"><h1 class="page-title"><span class="icon">⚙️</span> Settings</h1></div>
+      <div class="settings-tabs">
+        <a class="active" onclick="showSettingsTab('interest-levels',this)">Interest Levels</a>
+        <a onclick="showSettingsTab('custom-fields',this)">Custom Fields</a>
+        <a onclick="showSettingsTab('theme',this)">Theme</a>
+      </div>
+
+      <div class="settings-section active" id="settings-interest-levels">
+        <div class="settings-card">
+          <h3>🎯 Interest Levels</h3>
+          <div id="levelsContainer"></div>
+          <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);">
+            <h4 style="font-size:0.85rem;margin-bottom:0.75rem;">Add New Level</h4>
+            <div class="form-row" style="margin-bottom:0.75rem;">
+              <div class="form-group" style="margin-bottom:0"><label>Key (unique)</label><input type="text" id="newLevelKey" placeholder="e.g. negotiating"></div>
+              <div class="form-group" style="margin-bottom:0"><label>Name</label><input type="text" id="newLevelName" placeholder="e.g. Negotiating"></div>
+            </div>
+            <div class="form-row" style="margin-bottom:0.75rem;">
+              <div class="form-group" style="margin-bottom:0"><label>Emoji</label><input type="text" id="newLevelEmoji" placeholder="e.g. 🤝"></div>
+              <div style="display:flex;gap:0.5rem;align-items:end;">
+                <div class="form-group" style="margin-bottom:0"><label>Color</label><input type="color" id="newLevelColor" value="#6b7280" style="width:50px;height:34px;"></div>
+                <div class="form-group" style="margin-bottom:0"><label>BG</label><input type="color" id="newLevelBg" value="#f3f4f6" style="width:50px;height:34px;"></div>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="addLevel()">Add Level</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section" id="settings-custom-fields">
+        <div class="settings-card">
+          <h3>📝 Custom Client Fields</h3>
+          <div id="fieldsContainer"></div>
+          <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);">
+            <h4 style="font-size:0.85rem;margin-bottom:0.75rem;">Add New Field</h4>
+            <div class="form-row" style="margin-bottom:0.75rem;">
+              <div class="form-group" style="margin-bottom:0"><label>Field Name</label><input type="text" id="newFieldName" placeholder="e.g. Budget Range"></div>
+              <div class="form-group" style="margin-bottom:0"><label>Field Key</label><input type="text" id="newFieldKey" placeholder="e.g. budget_range"></div>
+            </div>
+            <div class="form-row" style="margin-bottom:0.75rem;">
+              <div class="form-group" style="margin-bottom:0"><label>Type</label><select id="newFieldType"><option value="text">Text</option><option value="number">Number</option><option value="date">Date</option><option value="dropdown">Dropdown</option></select></div>
+              <div class="form-group" style="margin-bottom:0"><label>Options (comma-sep)</label><input type="text" id="newFieldOptions" placeholder="e.g. Low,Medium,High"></div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="addField()">Add Field</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section" id="settings-theme">
+        <div class="settings-card">
+          <h3>🎨 Theme Customization</h3>
+          <div class="form-row" style="margin-bottom:1rem;">
+            <div class="color-input-group"><label>Primary Color</label><input type="color" id="themePrimary" value="#2563eb" onchange="previewTheme()"></div>
+            <div class="color-input-group"><label>Sidebar Color</label><input type="color" id="themeSidebar" value="#1e293b" onchange="previewTheme()"></div>
+          </div>
+          <div class="form-row" style="margin-bottom:1.5rem;">
+            <div class="color-input-group"><label>Background</label><input type="color" id="themeBackground" value="#f1f5f9" onchange="previewTheme()"></div>
+          </div>
+          <div style="display:flex;gap:0.75rem;">
+            <button class="btn btn-primary" onclick="saveTheme()">Save Theme</button>
+            <button class="btn btn-outline" onclick="resetTheme()">Reset Default</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
 <!-- Client Modal -->
 <div class="modal-overlay" id="clientModal">
   <div class="modal">
-    <h2 id="clientModalTitle">Add Client</h2>
-    <input type="hidden" id="clientId">
-    <div class="form-group"><label>Name *</label><input type="text" id="cName"></div>
-    <div class="form-group"><label>Contact</label><input type="text" id="cContact"></div>
-    <div class="form-group"><label>Email</label><input type="email" id="cEmail"></div>
-    <div class="form-group"><label>Project</label><select id="cProject"><option value="">-- No Project --</option></select></div>
-    <div class="form-group">
-      <label>Interest Level</label>
-      <select id="cLevel">
-        <option value="cold">❄️ Cold</option><option value="warm">🌤 Warm</option><option value="hot">🔥 Hot</option>
-        <option value="not_interested">🚫 Not Interested</option><option value="close_won">✅ Close Won</option><option value="close_lost">❌ Close Lost</option>
-      </select>
+    <div class="modal-header"><h2 id="clientModalTitle">Add Client</h2><button class="close-btn" onclick="closeModal('clientModal')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="clientId">
+      <div class="form-row">
+        <div class="form-group"><label>Name *</label><input type="text" id="cName"></div>
+        <div class="form-group"><label>Contact</label><input type="text" id="cContact"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Email</label><input type="email" id="cEmail"></div>
+        <div class="form-group"><label>Project</label><select id="cProject"><option value="">-- None --</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Interest Level</label><select id="cLevel"></select></div>
+        <div class="form-group"><label>Follow-up Date</label><input type="date" id="cFollowup"></div>
+      </div>
+      <div class="form-group" id="cAssignGroup" style="display:none"><label>Assign To</label><select id="cAssign"></select></div>
+      <div id="customFieldsContainer"></div>
     </div>
-    <div class="form-group"><label>Follow-up Date</label><input type="date" id="cFollowup"></div>
-    <div class="form-group" id="cAssignGroup" style="display:none"><label>Assign To</label><select id="cAssign"></select></div>
-    <div class="form-actions">
+    <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal('clientModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveClient()">Save</button>
+      <button class="btn btn-primary" onclick="saveClient()">Save Client</button>
     </div>
   </div>
 </div>
 
 <!-- Notes Modal -->
 <div class="modal-overlay" id="notesModal">
-  <div class="modal">
-    <h2>Notes - <span id="notesClientName"></span></h2>
-    <div class="form-group">
-      <textarea id="newNote" placeholder="Add a note about client conversation..."></textarea>
-      <button class="btn btn-primary btn-sm" style="margin-top:0.5rem" onclick="addNote()">Add Note</button>
+  <div class="modal" style="width:560px;">
+    <div class="modal-header"><h2>📝 Notes — <span id="notesClientName"></span></h2><button class="close-btn" onclick="closeModal('notesModal')">✕</button></div>
+    <div class="modal-body">
+      <div style="margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border);">
+        <div class="form-group"><label>New Note</label><textarea id="newNote" placeholder="Add a note about client conversation..." rows="3"></textarea></div>
+        <div class="form-group"><label>Set Follow-up Date (optional — updates client's follow-up)</label><input type="date" id="noteFollowup"></div>
+        <button class="btn btn-primary btn-sm" onclick="addNote()">Add Note</button>
+      </div>
+      <div class="notes-list" id="notesList"></div>
     </div>
-    <hr style="margin:1rem 0">
-    <div class="notes-list" id="notesList"></div>
-    <div class="form-actions"><button class="btn btn-outline" onclick="closeModal('notesModal')">Close</button></div>
   </div>
 </div>
 
 <!-- Upload Modal -->
 <div class="modal-overlay" id="uploadModal">
   <div class="modal">
-    <h2>Upload Excel</h2>
-    <p style="margin-bottom:1rem;color:var(--text-light);font-size:0.9rem;">Columns: Name, Contact, Email, Interest, Followup date</p>
-    <div class="form-group"><label>Excel File</label><input type="file" id="excelFile" accept=".xlsx,.xls,.csv"></div>
-    <div class="form-group"><label>Project</label><select id="uploadProject"><option value="">-- No Project --</option></select></div>
-    <div class="form-group" id="uploadAssignGroup" style="display:none"><label>Assign All To</label><select id="uploadAssign"></select></div>
-    <div class="form-actions">
+    <div class="modal-header"><h2>📤 Upload Excel</h2><button class="close-btn" onclick="closeModal('uploadModal')">✕</button></div>
+    <div class="modal-body">
+      <p style="margin-bottom:1rem;color:var(--text-light);font-size:0.85rem;">Columns: Name, Contact, Email, Interest Level, Followup Date</p>
+      <div class="form-group"><label>Excel File</label><input type="file" id="excelFile" accept=".xlsx,.xls,.csv"></div>
+      <div class="form-group"><label>Project</label><select id="uploadProject"><option value="">-- None --</option></select></div>
+      <div class="form-group" id="uploadAssignGroup" style="display:none"><label>Assign All To</label><select id="uploadAssign"></select></div>
+    </div>
+    <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal('uploadModal')">Cancel</button>
       <button class="btn btn-primary" onclick="uploadExcel()">Upload</button>
     </div>
@@ -238,12 +401,14 @@ tr:hover { background: #f8fafc; }
 <!-- Project Modal -->
 <div class="modal-overlay" id="projectModal">
   <div class="modal">
-    <h2 id="projectModalTitle">Add Project</h2>
-    <input type="hidden" id="projId">
-    <div class="form-group"><label>Project Name *</label><input type="text" id="projName"></div>
-    <div class="form-group"><label>Location</label><input type="text" id="projLocation"></div>
-    <div class="form-group"><label>Description</label><textarea id="projDesc"></textarea></div>
-    <div class="form-actions">
+    <div class="modal-header"><h2 id="projectModalTitle">Add Project</h2><button class="close-btn" onclick="closeModal('projectModal')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="projId">
+      <div class="form-group"><label>Project Name *</label><input type="text" id="projName"></div>
+      <div class="form-group"><label>Location</label><input type="text" id="projLocation"></div>
+      <div class="form-group"><label>Description</label><textarea id="projDesc"></textarea></div>
+    </div>
+    <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal('projectModal')">Cancel</button>
       <button class="btn btn-primary" onclick="saveProject()">Save</button>
     </div>
@@ -253,311 +418,413 @@ tr:hover { background: #f8fafc; }
 <!-- User Modal -->
 <div class="modal-overlay" id="userModal">
   <div class="modal">
-    <h2>Add Team Member</h2>
-    <div class="form-group"><label>Name *</label><input type="text" id="uName"></div>
-    <div class="form-group"><label>Username *</label><input type="text" id="uUsername"></div>
-    <div class="form-group"><label>Password *</label><input type="password" id="uPassword"></div>
-    <div class="form-group"><label>Role</label><select id="uRole"><option value="member">Member</option><option value="admin">Admin</option></select></div>
-    <div class="form-actions">
+    <div class="modal-header"><h2>Add Team Member</h2><button class="close-btn" onclick="closeModal('userModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Name *</label><input type="text" id="uName"></div>
+      <div class="form-group"><label>Username *</label><input type="text" id="uUsername"></div>
+      <div class="form-group"><label>Password *</label><input type="password" id="uPassword"></div>
+      <div class="form-group"><label>Role</label><select id="uRole"><option value="member">Member</option><option value="admin">Admin</option></select></div>
+    </div>
+    <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal('userModal')">Cancel</button>
       <button class="btn btn-primary" onclick="saveUser()">Save</button>
     </div>
   </div>
 </div>
 
-<script>
-let currentUser = null, allUsers = [], allProjects = [], currentNotesClientId = null;
+<!-- Edit Level Modal -->
+<div class="modal-overlay" id="editLevelModal">
+  <div class="modal" style="width:420px;">
+    <div class="modal-header"><h2>Edit Interest Level</h2><button class="close-btn" onclick="closeModal('editLevelModal')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="editLevelId">
+      <div class="form-group"><label>Name</label><input type="text" id="editLevelName"></div>
+      <div class="form-group"><label>Emoji</label><input type="text" id="editLevelEmoji"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Color</label><input type="color" id="editLevelColor"></div>
+        <div class="form-group"><label>BG Color</label><input type="color" id="editLevelBg"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('editLevelModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEditLevel()">Save</button>
+    </div>
+  </div>
+</div>
 
-async function api(url, opts = {}) {
-  const res = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...opts });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Error');
+<script>
+let currentUser=null,allUsers=[],allProjects=[],allLevels=[],allCustomFields=[],currentNotesClientId=null;
+
+async function api(url,opts={}){
+  const res=await fetch(url,{headers:{'Content-Type':'application/json'},...opts});
+  const data=await res.json();
+  if(!res.ok)throw new Error(data.error||'Error');
   return data;
 }
 
-async function login() {
-  try {
-    currentUser = await api('/api/login', { method: 'POST', body: JSON.stringify({ username: document.getElementById('loginUser').value, password: document.getElementById('loginPass').value }) });
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function cleanPhone(p){return String(p||'').replace(/[^0-9+]/g,'');}
+function contactCell(contact){
+  if(!contact||contact==='-')return'-';
+  const ph=cleanPhone(contact);
+  const waPh=ph.startsWith('+')?ph.slice(1):ph;
+  return`<div style="display:flex;align-items:center;gap:0.4rem;flex-wrap:nowrap;">
+    <span>${esc(contact)}</span>
+    ${ph?`<a href="https://wa.me/${waPh}" target="_blank" title="WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:#25D366;color:#fff;border-radius:6px;text-decoration:none;font-size:0.85rem;flex-shrink:0;transition:transform 0.15s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">💬</a>
+    <a href="tel:${ph}" title="Call Now" style="display:inline-flex;align-items:center;justify-content:center;padding:0 10px;height:28px;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;border-radius:6px;text-decoration:none;font-size:0.78rem;font-weight:600;flex-shrink:0;transition:transform 0.15s;gap:4px;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">📞 Call</a>`:''}</div>`
+}
+
+let _debounceTimer;
+function debouncedLoadClients(){clearTimeout(_debounceTimer);_debounceTimer=setTimeout(loadClients,300);}
+
+// === AUTH ===
+async function login(){
+  try{
+    currentUser=await api('/api/login',{method:'POST',body:JSON.stringify({username:document.getElementById('loginUser').value,password:document.getElementById('loginPass').value})});
     initApp();
-  } catch (e) { const el = document.getElementById('loginError'); el.textContent = e.message; el.style.display = 'block'; }
+  }catch(e){const el=document.getElementById('loginError');el.textContent=e.message;el.style.display='block';}
 }
-document.getElementById('loginPass').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
+document.getElementById('loginPass').addEventListener('keypress',e=>{if(e.key==='Enter')login();});
+document.getElementById('loginUser').addEventListener('keypress',e=>{if(e.key==='Enter')document.getElementById('loginPass').focus();});
 
-async function checkAuth() {
-  try { currentUser = await api('/api/me'); initApp(); } catch (e) { document.getElementById('loginPage').style.display = 'flex'; }
+async function checkAuth(){
+  try{currentUser=await api('/api/me');initApp();}catch(e){document.getElementById('loginPage').style.display='flex';}
 }
 
-function initApp() {
-  document.getElementById('loginPage').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  document.getElementById('userName').textContent = currentUser.name;
-  document.getElementById('userRole').textContent = currentUser.role === 'admin' ? '👑 Admin' : '👤 Member';
-  if (currentUser.role === 'admin') {
-    document.getElementById('nav-team').style.display = 'block';
-    document.getElementById('thAssigned').style.display = '';
-    document.getElementById('cAssignGroup').style.display = 'block';
-    document.getElementById('uploadAssignGroup').style.display = 'block';
-    document.getElementById('filterUser').style.display = '';
-    document.getElementById('addProjectBtn').style.display = '';
-    document.getElementById('thProjectActions').style.display = '';
-    loadUsers();
+async function initApp(){
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('userName').textContent=currentUser.name;
+  document.getElementById('userRole').textContent=currentUser.role==='admin'?'Admin':'Member';
+  document.getElementById('userAvatar').textContent=currentUser.name.charAt(0).toUpperCase();
+  await loadLevels();
+  await loadTheme();
+  await loadCustomFields();
+  if(currentUser.role==='admin'){
+    document.getElementById('nav-team').style.display='';
+    document.getElementById('nav-settings').style.display='';
+    document.getElementById('thAssigned').style.display='';
+    document.getElementById('cAssignGroup').style.display='block';
+    document.getElementById('uploadAssignGroup').style.display='block';
+    document.getElementById('filterUser').style.display='';
+    document.getElementById('addProjectBtn').style.display='';
+    document.getElementById('thProjectActions').style.display='';
+    await loadUsers();
   }
-  loadProjects();
+  await loadProjects();
   showPage('dashboard');
 }
 
-async function loadUsers() {
-  allUsers = await api('/api/users');
-  ['cAssign', 'filterUser', 'uploadAssign'].forEach(id => {
-    const el = document.getElementById(id);
-    el.innerHTML = id === 'filterUser' ? '<option value="">All Members</option>' : '';
-    allUsers.forEach(u => el.innerHTML += `<option value="${u.id}">${u.name}</option>`);
+// === LEVELS ===
+async function loadLevels(){
+  allLevels=await api('/api/interest-levels');
+  const fl=document.getElementById('filterLevel');
+  fl.innerHTML='<option value="">All Levels</option>';
+  allLevels.forEach(l=>fl.innerHTML+=`<option value="${esc(l.key)}">${l.emoji} ${esc(l.name)}</option>`);
+  const cl=document.getElementById('cLevel');
+  cl.innerHTML='';
+  allLevels.forEach(l=>cl.innerHTML+=`<option value="${esc(l.key)}">${l.emoji} ${esc(l.name)}</option>`);
+}
+
+function levelBadge(key){
+  const l=allLevels.find(x=>x.key===key);
+  if(!l)return `<span class="badge" style="background:#f3f4f6;color:#6b7280">${esc(key)}</span>`;
+  return `<span class="badge" style="background:${esc(l.bg_color)};color:${esc(l.color)}">${l.emoji} ${esc(l.name)}</span>`;
+}
+
+// === THEME ===
+async function loadTheme(){
+  try{
+    const t=await api('/api/settings/theme');
+    applyTheme(t);
+    if(t.theme_primary)document.getElementById('themePrimary').value=t.theme_primary;
+    if(t.theme_sidebar)document.getElementById('themeSidebar').value=t.theme_sidebar;
+    if(t.theme_background)document.getElementById('themeBackground').value=t.theme_background;
+  }catch(e){}
+}
+function applyTheme(t){
+  if(t.theme_primary){document.documentElement.style.setProperty('--primary',t.theme_primary);document.documentElement.style.setProperty('--primary-dark',t.theme_primary);}
+  if(t.theme_sidebar)document.documentElement.style.setProperty('--sidebar-bg',t.theme_sidebar);
+  if(t.theme_background)document.documentElement.style.setProperty('--bg',t.theme_background);
+}
+function previewTheme(){applyTheme({theme_primary:document.getElementById('themePrimary').value,theme_sidebar:document.getElementById('themeSidebar').value,theme_background:document.getElementById('themeBackground').value});}
+async function saveTheme(){
+  await api('/api/settings/theme',{method:'PUT',body:JSON.stringify({theme_primary:document.getElementById('themePrimary').value,theme_sidebar:document.getElementById('themeSidebar').value,theme_background:document.getElementById('themeBackground').value})});
+  alert('Theme saved!');
+}
+function resetTheme(){document.getElementById('themePrimary').value='#2563eb';document.getElementById('themeSidebar').value='#1e293b';document.getElementById('themeBackground').value='#f1f5f9';previewTheme();}
+
+// === CUSTOM FIELDS ===
+async function loadCustomFields(){allCustomFields=await api('/api/custom-fields');renderFieldsSettings();}
+
+function renderFieldsSettings(){
+  const c=document.getElementById('fieldsContainer');
+  if(!allCustomFields.length){c.innerHTML='<p style="color:var(--text-light);font-size:0.9rem;">No custom fields yet.</p>';return;}
+  c.innerHTML=allCustomFields.map(f=>`<div class="field-row">
+    <span style="flex:1;font-weight:500;">${esc(f.field_name)}</span>
+    <span style="color:var(--text-light);font-size:0.8rem;">${esc(f.field_key)} · ${esc(f.field_type)}${f.options?' · '+esc(f.options):''}</span>
+    <button class="btn-icon" onclick="deleteField(${f.id})" title="Delete">🗑</button>
+  </div>`).join('');
+}
+
+function renderCustomFieldsInForm(data){
+  const c=document.getElementById('customFieldsContainer');
+  if(!allCustomFields.length){c.innerHTML='';return;}
+  let html='<div style="margin-top:0.5rem;padding-top:0.75rem;border-top:1px solid var(--border);"><h4 style="font-size:0.85rem;margin-bottom:0.75rem;color:var(--text-light);">Custom Fields</h4>';
+  allCustomFields.forEach(f=>{
+    const val=(data&&data.custom_data&&data.custom_data[f.field_key])||'';
+    let inp='';
+    if(f.field_type==='dropdown'&&f.options){
+      const opts=f.options.split(',').map(o=>o.trim());
+      inp=`<select id="cf_${esc(f.field_key)}"><option value="">-- Select --</option>${opts.map(o=>`<option value="${esc(o)}"${val===o?' selected':''}>${esc(o)}</option>`).join('')}</select>`;
+    }else if(f.field_type==='number'){
+      inp=`<input type="number" id="cf_${esc(f.field_key)}" value="${esc(val)}">`;
+    }else if(f.field_type==='date'){
+      inp=`<input type="date" id="cf_${esc(f.field_key)}" value="${esc(val)}">`;
+    }else{
+      inp=`<input type="text" id="cf_${esc(f.field_key)}" value="${esc(val)}">`;
+    }
+    html+=`<div class="form-group"><label>${esc(f.field_name)}</label>${inp}</div>`;
+  });
+  c.innerHTML=html+'</div>';
+}
+
+function getCustomFieldValues(){
+  const d={};
+  allCustomFields.forEach(f=>{const el=document.getElementById('cf_'+f.field_key);if(el)d[f.field_key]=el.value;});
+  return d;
+}
+
+async function addField(){
+  const name=document.getElementById('newFieldName').value.trim();
+  const key=document.getElementById('newFieldKey').value.trim();
+  const type=document.getElementById('newFieldType').value;
+  const options=document.getElementById('newFieldOptions').value.trim();
+  if(!name||!key)return alert('Name and key required');
+  try{await api('/api/custom-fields',{method:'POST',body:JSON.stringify({field_name:name,field_key:key,field_type:type,options:options||null})});
+    document.getElementById('newFieldName').value='';document.getElementById('newFieldKey').value='';document.getElementById('newFieldOptions').value='';
+    await loadCustomFields();
+  }catch(e){alert(e.message);}
+}
+async function deleteField(id){if(!confirm('Delete this custom field?'))return;await api('/api/custom-fields/'+id,{method:'DELETE'});await loadCustomFields();}
+
+// === USERS / PROJECTS ===
+async function loadUsers(){
+  allUsers=await api('/api/users');
+  ['cAssign','filterUser','uploadAssign'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.innerHTML=id==='filterUser'?'<option value="">All Members</option>':'';
+    allUsers.forEach(u=>el.innerHTML+=`<option value="${u.id}">${esc(u.name)}</option>`);
+  });
+}
+async function loadProjects(){
+  allProjects=await api('/api/projects');
+  ['cProject','filterProject','uploadProject'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    el.innerHTML=id==='filterProject'?'<option value="">All Projects</option>':'<option value="">-- None --</option>';
+    allProjects.forEach(p=>el.innerHTML+=`<option value="${p.id}">${esc(p.name)}</option>`);
   });
 }
 
-async function loadProjects() {
-  allProjects = await api('/api/projects');
-  ['cProject', 'filterProject', 'uploadProject'].forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.innerHTML = id === 'filterProject' ? '<option value="">All Projects</option>' : '<option value="">-- No Project --</option>';
-    allProjects.forEach(p => el.innerHTML += `<option value="${p.id}">${esc(p.name)}</option>`);
-  });
+// === NAVIGATION ===
+function showPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-nav a').forEach(a=>a.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.getElementById('nav-'+page)?.classList.add('active');
+  if(page==='dashboard')loadDashboard();
+  if(page==='clients')loadClients();
+  if(page==='projects')loadProjectsPage();
+  if(page==='team')loadTeam();
+  if(page==='settings')loadSettingsData();
+  document.getElementById('sidebar').classList.remove('open');
+}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
+
+function showSettingsTab(tab,el){
+  document.querySelectorAll('.settings-tabs a').forEach(a=>a.classList.remove('active'));
+  document.querySelectorAll('.settings-section').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('settings-'+tab).classList.add('active');
+}
+async function loadSettingsData(){await loadLevels();renderLevelsSettings();await loadCustomFields();}
+
+function renderLevelsSettings(){
+  const c=document.getElementById('levelsContainer');
+  if(!allLevels.length){c.innerHTML='<p style="color:var(--text-light);">No levels.</p>';return;}
+  c.innerHTML=allLevels.map(l=>`<div class="level-row">
+    <span class="level-preview" style="background:${esc(l.bg_color)};color:${esc(l.color)}">${l.emoji} ${esc(l.name)}</span>
+    <span style="flex:1;font-size:0.8rem;color:var(--text-light);">${esc(l.key)}</span>
+    <button class="btn-icon" onclick="editLevel(${l.id})" title="Edit">✏️</button>
+    <button class="btn-icon" onclick="deleteLevel(${l.id})" title="Delete">🗑</button>
+  </div>`).join('');
 }
 
-function showPage(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-  document.getElementById('nav-' + page)?.classList.add('active');
-  if (page === 'dashboard') loadDashboard();
-  if (page === 'clients') loadClients();
-  if (page === 'projects') loadProjectsPage();
-  if (page === 'team') loadTeam();
+async function addLevel(){
+  const key=document.getElementById('newLevelKey').value.trim(),name=document.getElementById('newLevelName').value.trim(),emoji=document.getElementById('newLevelEmoji').value.trim(),color=document.getElementById('newLevelColor').value,bg=document.getElementById('newLevelBg').value;
+  if(!key||!name)return alert('Key and name required');
+  try{await api('/api/interest-levels',{method:'POST',body:JSON.stringify({key,name,emoji,color,bg_color:bg})});
+    document.getElementById('newLevelKey').value='';document.getElementById('newLevelName').value='';document.getElementById('newLevelEmoji').value='';
+    await loadLevels();renderLevelsSettings();
+  }catch(e){alert(e.message);}
 }
+function editLevel(id){
+  const l=allLevels.find(x=>x.id===id);if(!l)return;
+  document.getElementById('editLevelId').value=l.id;
+  document.getElementById('editLevelName').value=l.name;
+  document.getElementById('editLevelEmoji').value=l.emoji;
+  document.getElementById('editLevelColor').value=l.color;
+  document.getElementById('editLevelBg').value=l.bg_color;
+  document.getElementById('editLevelModal').classList.add('show');
+}
+async function saveEditLevel(){
+  await api('/api/interest-levels/'+document.getElementById('editLevelId').value,{method:'PUT',body:JSON.stringify({name:document.getElementById('editLevelName').value,emoji:document.getElementById('editLevelEmoji').value,color:document.getElementById('editLevelColor').value,bg_color:document.getElementById('editLevelBg').value})});
+  closeModal('editLevelModal');await loadLevels();renderLevelsSettings();
+}
+async function deleteLevel(id){if(!confirm('Delete this level?'))return;await api('/api/interest-levels/'+id,{method:'DELETE'});await loadLevels();renderLevelsSettings();}
 
-async function loadDashboard() {
-  const stats = await api('/api/stats');
-  let html = `<div class="stat-card"><div class="label">Total Clients</div><div class="value">${stats.total}</div></div>`;
-  html += `<div class="stat-card"><div class="label">Today's Follow-ups</div><div class="value" style="color:var(--warning)">${stats.todayFollowups}</div></div>`;
-  html += `<div class="stat-card"><div class="label">Overdue</div><div class="value" style="color:var(--danger)">${stats.overdueFollowups}</div></div>`;
-  stats.byLevel.forEach(l => html += `<div class="stat-card"><div class="label">${levelLabel(l.interest_level)}</div><div class="value">${l.c}</div></div>`);
-  document.getElementById('statsGrid').innerHTML = html;
+// === DASHBOARD ===
+async function loadDashboard(){
+  const stats=await api('/api/stats');
+  let html=`<div class="stat-card accent"><div class="stat-icon">👥</div><div class="label">Total Clients</div><div class="value">${stats.total}</div></div>`;
+  html+=`<div class="stat-card"><div class="stat-icon">📅</div><div class="label">Today's Follow-ups</div><div class="value" style="color:var(--warning)">${stats.todayFollowups}</div></div>`;
+  html+=`<div class="stat-card"><div class="stat-icon">⚠️</div><div class="label">Overdue</div><div class="value" style="color:var(--danger)">${stats.overdueFollowups}</div></div>`;
+  if(stats.recentClients!==undefined)html+=`<div class="stat-card"><div class="stat-icon">✨</div><div class="label">New This Week</div><div class="value" style="color:var(--success)">${stats.recentClients}</div></div>`;
+  document.getElementById('statsGrid').innerHTML=html;
 
-  const clients = await api('/api/clients');
-  const today = new Date().toISOString().split('T')[0];
-  const todayClients = clients.filter(c => c.followup_date === today);
-  const table = document.getElementById('todayTable');
-  if (!todayClients.length) {
-    table.innerHTML = '<p style="padding:1.5rem;color:var(--text-light)">No follow-ups scheduled for today 👍</p>';
-  } else {
-    let t = '<table><thead><tr><th>Name</th><th>Contact</th><th>Project</th><th>Level</th><th>Actions</th></tr></thead><tbody>';
-    todayClients.forEach(c => t += `<tr><td>${esc(c.name)}</td><td>${esc(c.contact||'')}</td><td>${c.project_name ? '<span class="badge badge-project">'+esc(c.project_name)+'</span>' : '-'}</td><td><span class="badge badge-${c.interest_level}">${levelLabel(c.interest_level)}</span></td><td><button class="btn btn-sm btn-outline" onclick="openNotes(${c.id},'${esc(c.name)}')">📝 Notes</button></td></tr>`);
-    table.innerHTML = t + '</tbody></table>';
+  let ch='';
+  if(stats.byLevel.length){
+    const mx=Math.max(...stats.byLevel.map(l=>l.c),1);
+    ch+=`<div class="chart-card"><h3>📊 By Interest Level</h3><div class="bar-chart">${stats.byLevel.map(l=>{const lv=allLevels.find(x=>x.key===l.interest_level);const c=lv?lv.color:'#6b7280';const p=Math.round(l.c/mx*100);return`<div class="bar-item"><div class="bar-label">${lv?lv.emoji+' ':''} ${lv?lv.name:l.interest_level}</div><div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${c}"><span>${l.c}</span></div></div></div>`;}).join('')}</div></div>`;
+  }
+  if(stats.byUser.length){
+    const mx=Math.max(...stats.byUser.map(u=>u.c),1);
+    const cols=['#2563eb','#7c3aed','#ea580c','#16a34a','#dc2626','#0891b2'];
+    ch+=`<div class="chart-card"><h3>👔 By Team Member</h3><div class="bar-chart">${stats.byUser.map((u,i)=>{const p=Math.round(u.c/mx*100);return`<div class="bar-item"><div class="bar-label">${esc(u.name)}</div><div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${cols[i%cols.length]}"><span>${u.c}</span></div></div></div>`;}).join('')}</div></div>`;
+  }
+  document.getElementById('chartRow').innerHTML=ch;
+
+  const clients=await api('/api/clients');
+  const today=new Date().toISOString().split('T')[0];
+  const tc=clients.filter(c=>c.followup_date===today);
+  const tbl=document.getElementById('todayTable');
+  if(!tc.length){tbl.innerHTML='<div class="empty-state"><div class="icon">👍</div><p>No follow-ups for today</p></div>';}
+  else{let t='<table><thead><tr><th>Name</th><th>Contact</th><th>Project</th><th>Level</th><th>Actions</th></tr></thead><tbody>';
+    tc.forEach(c=>t+=`<tr><td><strong>${esc(c.name)}</strong></td><td>${contactCell(c.contact)}</td><td>${c.project_name?'<span class="badge badge-project">'+esc(c.project_name)+'</span>':'-'}</td><td>${levelBadge(c.interest_level)}</td><td><button class="btn btn-sm btn-outline" onclick="openNotes(${c.id},'${esc(c.name)}')">📝 Notes</button></td></tr>`);
+    tbl.innerHTML=t+'</tbody></table>';
   }
 }
 
-async function loadClients() {
-  const params = new URLSearchParams();
-  const search = document.getElementById('searchInput').value;
-  const level = document.getElementById('filterLevel').value;
-  const user = document.getElementById('filterUser').value;
-  const project = document.getElementById('filterProject').value;
-  if (search) params.set('search', search);
-  if (level) params.set('interest_level', level);
-  if (user) params.set('assigned_to', user);
-  if (project) params.set('project_id', project);
-
-  const clients = await api('/api/clients?' + params);
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('clientsBody').innerHTML = clients.map(c => {
-    let dc = '';
-    if (c.followup_date && !['close_won','close_lost','not_interested'].includes(c.interest_level)) {
-      if (c.followup_date < today) dc = 'overdue';
-      else if (c.followup_date === today) dc = 'today';
-    }
-    return `<tr>
-      <td><strong>${esc(c.name)}</strong></td>
-      <td>${esc(c.contact||'')}</td>
-      <td>${c.project_name ? '<span class="badge badge-project">'+esc(c.project_name)+'</span>' : '-'}</td>
-      <td><span class="badge badge-${c.interest_level}">${levelLabel(c.interest_level)}</span></td>
-      <td class="${dc}">${c.followup_date || '-'}</td>
-      ${currentUser.role === 'admin' ? `<td>${esc(c.assigned_name||'')}</td>` : ''}
-      <td>
-        <button class="btn btn-sm btn-outline" onclick="openNotes(${c.id},'${esc(c.name)}')">📝</button>
-        <button class="btn btn-sm btn-outline" onclick="editClient(${c.id})">✏️</button>
-        <button class="btn btn-sm btn-danger" onclick="deleteClient(${c.id})">🗑</button>
-      </td></tr>`;
+// === CLIENTS ===
+async function loadClients(){
+  const params=new URLSearchParams();
+  const s=document.getElementById('searchInput').value,l=document.getElementById('filterLevel').value,u=document.getElementById('filterUser').value,p=document.getElementById('filterProject').value;
+  if(s)params.set('search',s);if(l)params.set('interest_level',l);if(u)params.set('assigned_to',u);if(p)params.set('project_id',p);
+  const clients=await api('/api/clients?'+params);
+  const today=new Date().toISOString().split('T')[0];
+  const body=document.getElementById('clientsBody');
+  if(!clients.length){body.innerHTML=`<tr><td colspan="${currentUser.role==='admin'?7:6}"><div class="empty-state"><div class="icon">👥</div><p>No clients found</p></div></td></tr>`;return;}
+  body.innerHTML=clients.map(c=>{
+    let dc='';if(c.followup_date&&!['close_won','close_lost','not_interested'].includes(c.interest_level)){if(c.followup_date<today)dc='overdue';else if(c.followup_date===today)dc='today';}
+    return`<tr><td><strong>${esc(c.name)}</strong>${c.email?'<br><small style="color:var(--text-light)">'+esc(c.email)+'</small>':''}</td><td>${contactCell(c.contact)}</td><td>${c.project_name?'<span class="badge badge-project">'+esc(c.project_name)+'</span>':'-'}</td><td>${levelBadge(c.interest_level)}</td><td class="${dc}">${c.followup_date||'-'}</td>${currentUser.role==='admin'?'<td>'+esc(c.assigned_name||'-')+'</td>':''}<td style="white-space:nowrap;"><button class="btn-icon" onclick="openNotes(${c.id},'${esc(c.name)}')" title="Notes">📝</button> <button class="btn-icon" onclick="editClient(${c.id})" title="Edit">✏️</button> <button class="btn-icon" onclick="deleteClient(${c.id})" title="Delete" style="color:var(--danger)">🗑</button></td></tr>`;
   }).join('');
 }
 
-function levelLabel(l) {
-  return { hot:'🔥 Hot', warm:'🌤 Warm', cold:'❄️ Cold', not_interested:'🚫 Not Interested', close_won:'✅ Close Won', close_lost:'❌ Close Lost' }[l] || l;
-}
-function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
-
-function showClientModal(data) {
-  document.getElementById('clientModalTitle').textContent = data ? 'Edit Client' : 'Add Client';
-  document.getElementById('clientId').value = data?.id || '';
-  document.getElementById('cName').value = data?.name || '';
-  document.getElementById('cContact').value = data?.contact || '';
-  document.getElementById('cEmail').value = data?.email || '';
-  document.getElementById('cLevel').value = data?.interest_level || 'cold';
-  document.getElementById('cFollowup').value = data?.followup_date || '';
-  document.getElementById('cProject').value = data?.project_id || '';
-  if (data?.assigned_to) document.getElementById('cAssign').value = data.assigned_to;
+function showClientModal(data){
+  document.getElementById('clientModalTitle').textContent=data?'Edit Client':'Add Client';
+  document.getElementById('clientId').value=data?.id||'';
+  document.getElementById('cName').value=data?.name||'';
+  document.getElementById('cContact').value=data?.contact||'';
+  document.getElementById('cEmail').value=data?.email||'';
+  document.getElementById('cLevel').value=data?.interest_level||'cold';
+  document.getElementById('cFollowup').value=data?.followup_date||'';
+  document.getElementById('cProject').value=data?.project_id||'';
+  if(data?.assigned_to)document.getElementById('cAssign').value=data.assigned_to;
+  renderCustomFieldsInForm(data);
   document.getElementById('clientModal').classList.add('show');
 }
+async function editClient(id){const clients=await api('/api/clients');const c=clients.find(x=>x.id===id);if(c)showClientModal(c);}
+async function saveClient(){
+  const id=document.getElementById('clientId').value;
+  const body={name:document.getElementById('cName').value,contact:document.getElementById('cContact').value,email:document.getElementById('cEmail').value,interest_level:document.getElementById('cLevel').value,followup_date:document.getElementById('cFollowup').value,project_id:document.getElementById('cProject').value||null,assigned_to:document.getElementById('cAssign').value||undefined,custom_data:getCustomFieldValues()};
+  if(!body.name)return alert('Name is required');
+  await api(id?`/api/clients/${id}`:'/api/clients',{method:id?'PUT':'POST',body:JSON.stringify(body)});
+  closeModal('clientModal');loadClients();
+}
+async function deleteClient(id){if(!confirm('Delete this client?'))return;await api(`/api/clients/${id}`,{method:'DELETE'});loadClients();}
 
-async function editClient(id) {
-  const clients = await api('/api/clients');
-  const c = clients.find(x => x.id === id);
-  if (c) showClientModal(c);
+// === NOTES ===
+async function openNotes(clientId,name){
+  currentNotesClientId=clientId;
+  document.getElementById('notesClientName').textContent=name;
+  document.getElementById('newNote').value='';document.getElementById('noteFollowup').value='';
+  await loadNotes();document.getElementById('notesModal').classList.add('show');
+}
+async function loadNotes(){
+  const notes=await api(`/api/clients/${currentNotesClientId}/notes`);
+  document.getElementById('notesList').innerHTML=notes.length===0?'<div class="empty-state"><p>No notes yet</p></div>':notes.map(n=>`<div class="note-item"><div class="note-meta"><strong>${esc(n.user_name)}</strong> · ${new Date(n.created_at).toLocaleString()}${n.followup_date?' <span class="followup-tag">📅 '+esc(n.followup_date)+'</span>':''}</div><div class="note-text">${esc(n.note)}</div></div>`).join('');
+}
+async function addNote(){
+  const note=document.getElementById('newNote').value.trim();if(!note)return;
+  const followup_date=document.getElementById('noteFollowup').value;
+  await api(`/api/clients/${currentNotesClientId}/notes`,{method:'POST',body:JSON.stringify({note,followup_date:followup_date||null})});
+  document.getElementById('newNote').value='';document.getElementById('noteFollowup').value='';
+  loadNotes();loadClients();
 }
 
-async function saveClient() {
-  const id = document.getElementById('clientId').value;
-  const body = {
-    name: document.getElementById('cName').value,
-    contact: document.getElementById('cContact').value,
-    email: document.getElementById('cEmail').value,
-    interest_level: document.getElementById('cLevel').value,
-    followup_date: document.getElementById('cFollowup').value,
-    project_id: document.getElementById('cProject').value || null,
-    assigned_to: document.getElementById('cAssign').value || undefined
-  };
-  if (!body.name) return alert('Name is required');
-  await api(id ? `/api/clients/${id}` : '/api/clients', { method: id ? 'PUT' : 'POST', body: JSON.stringify(body) });
-  closeModal('clientModal');
-  loadClients();
+// === UPLOAD ===
+function showUploadModal(){document.getElementById('excelFile').value='';document.getElementById('uploadModal').classList.add('show');}
+async function uploadExcel(){
+  const file=document.getElementById('excelFile').files[0];if(!file)return alert('Select a file');
+  const fd=new FormData();fd.append('file',file);fd.append('assigned_to',document.getElementById('uploadAssign')?.value||'');fd.append('project_id',document.getElementById('uploadProject').value||'');
+  const res=await fetch('/api/clients/upload',{method:'POST',body:fd});const data=await res.json();
+  if(res.ok){alert(`${data.imported} contacts imported!`);closeModal('uploadModal');loadClients();}else alert(data.error);
 }
 
-async function deleteClient(id) {
-  if (!confirm('Are you sure?')) return;
-  await api(`/api/clients/${id}`, { method: 'DELETE' });
-  loadClients();
+// === PROJECTS ===
+async function loadProjectsPage(){
+  const projects=await api('/api/projects'),clients=await api('/api/clients');
+  const body=document.getElementById('projectsBody');
+  if(!projects.length){body.innerHTML=`<tr><td colspan="${currentUser.role==='admin'?5:4}"><div class="empty-state"><div class="icon">🏗️</div><p>No projects yet</p></div></td></tr>`;return;}
+  body.innerHTML=projects.map(p=>{const count=clients.filter(c=>c.project_id===p.id).length;
+    return`<tr><td><strong>${esc(p.name)}</strong></td><td>${esc(p.location||'-')}</td><td>${esc(p.description||'-')}</td><td><span class="badge badge-project">${count} clients</span></td>${currentUser.role==='admin'?`<td style="white-space:nowrap;"><button class="btn-icon" onclick="editProject(${p.id})">✏️</button> <button class="btn-icon" onclick="deleteProject(${p.id})" style="color:var(--danger)">🗑</button></td>`:''}</tr>`;
+  }).join('');
 }
-
-async function openNotes(clientId, name) {
-  currentNotesClientId = clientId;
-  document.getElementById('notesClientName').textContent = name;
-  document.getElementById('newNote').value = '';
-  await loadNotes();
-  document.getElementById('notesModal').classList.add('show');
-}
-
-async function loadNotes() {
-  const notes = await api(`/api/clients/${currentNotesClientId}/notes`);
-  document.getElementById('notesList').innerHTML = notes.length === 0
-    ? '<p style="color:var(--text-light);padding:1rem;">No notes yet</p>'
-    : notes.map(n => `<div class="note-item"><div class="note-meta"><strong>${esc(n.user_name)}</strong> • ${new Date(n.created_at).toLocaleString()}</div><div class="note-text">${esc(n.note)}</div></div>`).join('');
-}
-
-async function addNote() {
-  const note = document.getElementById('newNote').value.trim();
-  if (!note) return;
-  await api(`/api/clients/${currentNotesClientId}/notes`, { method: 'POST', body: JSON.stringify({ note }) });
-  document.getElementById('newNote').value = '';
-  loadNotes();
-}
-
-function showUploadModal() {
-  document.getElementById('excelFile').value = '';
-  document.getElementById('uploadModal').classList.add('show');
-}
-
-async function uploadExcel() {
-  const file = document.getElementById('excelFile').files[0];
-  if (!file) return alert('Please select a file');
-  const fd = new FormData();
-  fd.append('file', file);
-  fd.append('assigned_to', document.getElementById('uploadAssign')?.value || '');
-  fd.append('project_id', document.getElementById('uploadProject').value || '');
-  const res = await fetch('/api/clients/upload', { method: 'POST', body: fd });
-  const data = await res.json();
-  if (res.ok) { alert(`${data.imported} contacts imported!`); closeModal('uploadModal'); loadClients(); }
-  else alert(data.error);
-}
-
-// Projects
-async function loadProjectsPage() {
-  const projects = await api('/api/projects');
-  const clients = await api('/api/clients');
-  document.getElementById('projectsBody').innerHTML = projects.map(p => {
-    const count = clients.filter(c => c.project_id === p.id).length;
-    return `<tr>
-      <td><strong>${esc(p.name)}</strong></td>
-      <td>${esc(p.location||'')}</td>
-      <td>${esc(p.description||'')}</td>
-      <td><span class="badge badge-project">${count} clients</span></td>
-      ${currentUser.role === 'admin' ? `<td><button class="btn btn-sm btn-outline" onclick="editProject(${p.id})">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteProject(${p.id})">🗑</button></td>` : ''}
-    </tr>`;
-  }).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--text-light);padding:2rem;">No projects yet</td></tr>';
-}
-
-function showProjectModal(data) {
-  document.getElementById('projectModalTitle').textContent = data ? 'Edit Project' : 'Add Project';
-  document.getElementById('projId').value = data?.id || '';
-  document.getElementById('projName').value = data?.name || '';
-  document.getElementById('projLocation').value = data?.location || '';
-  document.getElementById('projDesc').value = data?.description || '';
+function showProjectModal(data){
+  document.getElementById('projectModalTitle').textContent=data?'Edit Project':'Add Project';
+  document.getElementById('projId').value=data?.id||'';document.getElementById('projName').value=data?.name||'';
+  document.getElementById('projLocation').value=data?.location||'';document.getElementById('projDesc').value=data?.description||'';
   document.getElementById('projectModal').classList.add('show');
 }
-
-async function editProject(id) {
-  const p = allProjects.find(x => x.id === id);
-  if (p) showProjectModal(p);
+async function editProject(id){const p=allProjects.find(x=>x.id===id);if(p)showProjectModal(p);}
+async function saveProject(){
+  const id=document.getElementById('projId').value;
+  const body={name:document.getElementById('projName').value,location:document.getElementById('projLocation').value,description:document.getElementById('projDesc').value};
+  if(!body.name)return alert('Project name required');
+  await api(id?`/api/projects/${id}`:'/api/projects',{method:id?'PUT':'POST',body:JSON.stringify(body)});
+  closeModal('projectModal');loadProjects();loadProjectsPage();
 }
+async function deleteProject(id){if(!confirm('Delete project?'))return;await api(`/api/projects/${id}`,{method:'DELETE'});loadProjects();loadProjectsPage();}
 
-async function saveProject() {
-  const id = document.getElementById('projId').value;
-  const body = { name: document.getElementById('projName').value, location: document.getElementById('projLocation').value, description: document.getElementById('projDesc').value };
-  if (!body.name) return alert('Project name is required');
-  await api(id ? `/api/projects/${id}` : '/api/projects', { method: id ? 'PUT' : 'POST', body: JSON.stringify(body) });
-  closeModal('projectModal');
-  loadProjects();
-  loadProjectsPage();
+// === TEAM ===
+async function loadTeam(){
+  const users=await api('/api/users');
+  document.getElementById('teamBody').innerHTML=users.map(u=>`<tr><td><strong>${esc(u.name)}</strong></td><td>${esc(u.username)}</td><td>${u.role==='admin'?'<span class="badge" style="background:#fef3c7;color:#92400e">👑 Admin</span>':'<span class="badge" style="background:#eff6ff;color:#2563eb">👤 Member</span>'}</td><td>${u.role!=='admin'?`<button class="btn-icon" onclick="deleteUser(${u.id})" style="color:var(--danger)">🗑</button>`:''}</td></tr>`).join('');
 }
-
-async function deleteProject(id) {
-  if (!confirm('Delete this project? Clients will be unassigned.')) return;
-  await api(`/api/projects/${id}`, { method: 'DELETE' });
-  loadProjects();
-  loadProjectsPage();
+function showUserModal(){['uName','uUsername','uPassword'].forEach(id=>document.getElementById(id).value='');document.getElementById('uRole').value='member';document.getElementById('userModal').classList.add('show');}
+async function saveUser(){
+  const body={name:document.getElementById('uName').value,username:document.getElementById('uUsername').value,password:document.getElementById('uPassword').value,role:document.getElementById('uRole').value};
+  if(!body.name||!body.username||!body.password)return alert('Fill all fields');
+  try{await api('/api/users',{method:'POST',body:JSON.stringify(body)});closeModal('userModal');loadTeam();loadUsers();}catch(e){alert(e.message);}
 }
+async function deleteUser(id){if(!confirm('Delete member?'))return;await api(`/api/users/${id}`,{method:'DELETE'});loadTeam();loadUsers();}
+async function logout(){await api('/api/logout',{method:'POST'});location.reload();}
 
-// Team
-async function loadTeam() {
-  const users = await api('/api/users');
-  document.getElementById('teamBody').innerHTML = users.map(u => `<tr>
-    <td>${esc(u.name)}</td><td>${esc(u.username)}</td><td>${u.role === 'admin' ? '👑 Admin' : '👤 Member'}</td>
-    <td>${u.role !== 'admin' ? `<button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id})">🗑</button>` : ''}</td>
-  </tr>`).join('');
-}
-
-function showUserModal() {
-  ['uName','uUsername','uPassword'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('uRole').value = 'member';
-  document.getElementById('userModal').classList.add('show');
-}
-
-async function saveUser() {
-  const body = { name: document.getElementById('uName').value, username: document.getElementById('uUsername').value, password: document.getElementById('uPassword').value, role: document.getElementById('uRole').value };
-  if (!body.name || !body.username || !body.password) return alert('Fill all fields');
-  try { await api('/api/users', { method: 'POST', body: JSON.stringify(body) }); closeModal('userModal'); loadTeam(); loadUsers(); }
-  catch (e) { alert(e.message); }
-}
-
-async function deleteUser(id) {
-  if (!confirm('Delete this member?')) return;
-  await api(`/api/users/${id}`, { method: 'DELETE' });
-  loadTeam(); loadUsers();
-}
-
-async function logout() { await api('/api/logout', { method: 'POST' }); location.reload(); }
-
-function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-document.querySelectorAll('.modal-overlay').forEach(el => el.addEventListener('click', e => { if (e.target === el) el.classList.remove('show'); }));
+// === MODAL UTILS ===
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+document.querySelectorAll('.modal-overlay').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('show');}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-overlay.show').forEach(m=>m.classList.remove('show'));});
 
 checkAuth();
 </script>
